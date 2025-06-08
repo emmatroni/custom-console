@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="console.css">
+    <script src="console.js" defer></script>
+
+    <style>
+      /* Gruppo 1 - BASE1, CERCHIO1, PLAY1 */
+      .button-group:nth-child(1):hover #BASE1 {
+        fill: #fff !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(1):hover #CERCHIO1 path:first-child {
+        fill: #fa5004 !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(1):hover #PLAY1 path {
+        fill: #fff !important;
+        stroke: #fa5004 !important;
+      }
+
+      /* Gruppo 2 - BASE2, CERCHIO2, PAUSA2 */
+      .button-group:nth-child(2):hover #BASE2 {
+        fill: #fff !important;
+        stroke: #fff !important;
+
+      }
+      .button-group:nth-child(2):hover #CERCHIO2 path:first-child {
+        fill: #fa5004 !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(2):hover #PAUSA2 path {
+        fill: #fff !important;
+        stroke: #fa5004 !important;
+      }
+
+      /* Gruppo 3 - BASE3, CERCHIO3, PLAY3 */
+      .button-group:nth-child(3):hover #BASE3 {
+        fill: #fff !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(3):hover #CERCHIO3 path:first-child {
+        fill: #fa5004 !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(3):hover #PLAY3 path {
+        fill: #fff !important;
+        stroke: #fa5004 !important;
+      }
+
+      /* Gruppo 4 - BASE4, CERCHIO4, PAUSA4 */
+      .button-group:nth-child(4):hover #BASE4 {
+        fill: #fff !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(4):hover #CERCHIO4 path:first-child {
+        fill: #fa5004 !important;
+        stroke: #fff !important;
+      }
+      .button-group:nth-child(4):hover #PAUSA4 path {
+        fill: #fff !important;
+        stroke: #fa5004 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      viewBox="0 0 507 353"
+    >
+      <defs>
+        <clipPath id="clippath">
+          <rect x="43" y="1" width="464" height="214" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-1">
+          <rect
+            x="1"
+            y="1"
+            width="505"
+            height="351"
+            rx="22"
+            ry="22"
+            style="fill: none"
+          />
+        </clipPath>
+        <clipPath id="clippath-2">
+          <rect
+            x="196"
+            y="173"
+            width="293"
+            height="110"
+            rx="7"
+            ry="7"
+            style="fill: none"
+          />
+        </clipPath>
+        <clipPath id="clippath-3">
+          <rect
+            x="1"
+            y="19"
+            width="196"
+            height="258"
+            rx="7"
+            ry="7"
+            style="fill: none"
+          />
+        </clipPath>
+        <clipPath id="clippath-4">
+          <rect
+            x="196"
+            y="19"
+            width="147"
+            height="82"
+            rx="7"
+            ry="7"
+            style="fill: none"
+          />
+        </clipPath>
+        <clipPath id="clippath-5">
+          <rect
+            x="342"
+            y="19"
+            width="147"
+            height="82"
+            rx="7"
+            ry="7"
+            style="fill: none"
+          />
+        </clipPath>
+        <clipPath id="clippath-6">
+          <circle cx="63.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-7">
+          <circle cx="63.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-8">
+          <circle cx="63.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-9">
+          <circle cx="63.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-10">
+          <circle cx="63.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-11">
+          <circle cx="63.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-12">
+          <circle cx="63.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-13">
+          <circle cx="63.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-14">
+          <circle cx="63.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-15">
+          <circle cx="63.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-16">
+          <circle cx="63.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-17">
+          <circle cx="63.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-18">
+          <circle cx="77.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-19">
+          <circle cx="77.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-20">
+          <circle cx="77.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-21">
+          <circle cx="77.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-22">
+          <circle cx="77.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-23">
+          <circle cx="77.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-24">
+          <circle cx="77.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-25">
+          <circle cx="77.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-26">
+          <circle cx="77.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-27">
+          <circle cx="77.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-28">
+          <circle cx="77.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-29">
+          <circle cx="77.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-30">
+          <circle cx="91.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-31">
+          <circle cx="91.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-32">
+          <circle cx="91.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-33">
+          <circle cx="91.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-34">
+          <circle cx="91.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-35">
+          <circle cx="91.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-36">
+          <circle cx="91.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-37">
+          <circle cx="91.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-38">
+          <circle cx="91.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-39">
+          <circle cx="91.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-40">
+          <circle cx="91.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-41">
+          <circle cx="91.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-42">
+          <circle cx="105.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-43">
+          <circle cx="105.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-44">
+          <circle cx="105.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-45">
+          <circle cx="105.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-46">
+          <circle cx="105.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-47">
+          <circle cx="105.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-48">
+          <circle cx="105.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-49">
+          <circle cx="105.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-50">
+          <circle cx="105.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-51">
+          <circle cx="105.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-52">
+          <circle cx="105.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-53">
+          <circle cx="105.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-54">
+          <circle cx="119.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-55">
+          <circle cx="119.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-56">
+          <circle cx="119.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-57">
+          <circle cx="119.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-58">
+          <circle cx="119.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-59">
+          <circle cx="119.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-60">
+          <circle cx="119.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-61">
+          <circle cx="119.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-62">
+          <circle cx="119.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-63">
+          <circle cx="119.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-64">
+          <circle cx="119.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-65">
+          <circle cx="119.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-66">
+          <circle cx="133.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-67">
+          <circle cx="133.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-68">
+          <circle cx="133.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-69">
+          <circle cx="133.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-70">
+          <circle cx="133.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-71">
+          <circle cx="133.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-72">
+          <circle cx="133.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-73">
+          <circle cx="133.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-74">
+          <circle cx="133.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-75">
+          <circle cx="133.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-76">
+          <circle cx="133.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-77">
+          <circle cx="133.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-78">
+          <circle cx="147.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-79">
+          <circle cx="147.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-80">
+          <circle cx="147.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-81">
+          <circle cx="147.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-82">
+          <circle cx="147.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-83">
+          <circle cx="147.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-84">
+          <circle cx="147.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-85">
+          <circle cx="147.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-86">
+          <circle cx="147.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-87">
+          <circle cx="147.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-88">
+          <circle cx="147.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-89">
+          <circle cx="147.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-90">
+          <circle cx="161.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-91">
+          <circle cx="161.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-92">
+          <circle cx="161.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-93">
+          <circle cx="161.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-94">
+          <circle cx="161.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-95">
+          <circle cx="161.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-96">
+          <circle cx="161.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-97">
+          <circle cx="161.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-98">
+          <circle cx="161.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-99">
+          <circle cx="161.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-100">
+          <circle cx="161.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-101">
+          <circle cx="161.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-102">
+          <circle cx="161.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-103">
+          <circle cx="161.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-104">
+          <circle cx="161.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-105">
+          <circle cx="161.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-106">
+          <circle cx="161.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-107">
+          <circle cx="161.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-108">
+          <circle cx="161.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-109">
+          <circle cx="161.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-110">
+          <circle cx="161.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-111">
+          <circle cx="175.5" cy="40.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-112">
+          <circle cx="161.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-113">
+          <circle cx="175.5" cy="54.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-114">
+          <circle cx="161.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-115">
+          <circle cx="175.5" cy="68.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-116">
+          <circle cx="161.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-117">
+          <circle cx="175.5" cy="82.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-118">
+          <circle cx="161.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-119">
+          <circle cx="175.5" cy="96.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-120">
+          <circle cx="161.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-121">
+          <circle cx="175.5" cy="110.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-122">
+          <circle cx="161.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-123">
+          <circle cx="175.5" cy="124.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-124">
+          <circle cx="161.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-125">
+          <circle cx="175.5" cy="138.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-126">
+          <circle cx="161.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-127">
+          <circle cx="175.5" cy="152.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-128">
+          <circle cx="161.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-129">
+          <circle cx="175.5" cy="166.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-130">
+          <circle cx="161.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-131">
+          <circle cx="175.5" cy="180.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-132">
+          <circle cx="161.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+        <clipPath id="clippath-133">
+          <circle cx="175.5" cy="194.5" r="4.5" style="fill: none" />
+        </clipPath>
+      </defs>
+      <g id="NON_TOCCARE" data-name="NON TOCCARE">
+        <g style="clip-path: url(#clippath)">
+          <rect
+            x="1"
+            y="1"
+            width="505"
+            height="351"
+            rx="22"
+            ry="22"
+            style="fill: #fa5004"
+          />
+          <g style="clip-path: url(#clippath-1)">
+            <path
+              d="M23,1V0C10.3,0,0,10.3,0,23h2C2,11.4,11.4,2,23,2v-1ZM484,1v1c11.6,0,21,9.4,21,21h2c0-12.7-10.3-23-23-23v1ZM506,330h-1c0,11.6-9.4,21-21,21v2c12.7,0,23-10.3,23-23h-1ZM23,352v-1c-11.6,0-21-9.4-21-21H0c0,12.7,10.3,23,23,23v-1ZM1,330h1V23H0v307h1ZM484,352v-1H23v2h461v-1ZM506,23h-1v307h2V23h-1ZM23,1v1h461V0H23v1Z"
+              style="fill: #fff"
+            />
+          </g>
+          <g style="clip-path: url(#clippath-2)">
+            <path
+              d="M203,173v-1c-4.42,0-8,3.58-8,8h2c0-3.31,2.69-6,6-6v-1ZM482,173v1c3.31,0,6,2.69,6,6h2c0-4.42-3.58-8-8-8v1ZM489,276h-1c0,3.31-2.69,6-6,6v2c4.42,0,8-3.58,8-8h-1ZM203,283v-1c-3.31,0-6-2.69-6-6h-2c0,4.42,3.58,8,8,8v-1ZM196,276h1v-96h-2v96h1ZM482,283v-1H203v2h279v-1ZM489,180h-1v96h2v-96h-1ZM203,173v1h279v-2H203v1Z"
+              style="fill: #fff"
+            />
+          </g>
+          <g style="clip-path: url(#clippath-3)">
+            <path
+              d="M8,19v-1c-4.42,0-8,3.58-8,8h2c0-3.31,2.69-6,6-6v-1ZM190,19v1c3.31,0,6,2.69,6,6h2c0-4.42-3.58-8-8-8v1ZM197,270h-1c0,3.31-2.69,6-6,6v2c4.42,0,8-3.58,8-8h-1ZM8,277v-1c-3.31,0-6-2.69-6-6H0c0,4.42,3.58,8,8,8v-1ZM1,270h1V26H0v244h1ZM190,277v-1H8v2h182v-1ZM197,26h-1v244h2V26h-1ZM8,19v1h182v-2H8v1Z"
+              style="fill: #fff"
+            />
+          </g>
+          <path
+            d="M327.42,76.02c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-8.04c0-1.8,1.2-2.98,2.98-2.98h4.48c1.78,0,2.98,1.18,2.98,2.98v8.04ZM325.76,75.94v-7.9c0-.98-.62-1.6-1.6-1.6h-3.92c-.98,0-1.6.62-1.6,1.6v7.9c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62ZM304.27,66.44v-1.44h11.3v1.44h-4.82v12.56h-1.66v-12.56h-4.82ZM299.67,66.76l-2.7,7.2h5.4l-2.7-7.2ZM300.71,65l5.16,14h-1.74l-1.32-3.6h-6.28l-1.32,3.6h-1.7l5.18-14h2.02ZM290.54,79l-7.22-10.98v10.98h-1.66v-14h1.56l7.22,10.96v-10.96h1.66v14h-1.56ZM278.86,76.02c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-8.04c0-1.8,1.2-2.98,2.98-2.98h4.48c1.78,0,2.98,1.18,2.98,2.98v8.04ZM277.2,75.94v-7.9c0-.98-.62-1.6-1.6-1.6h-3.92c-.98,0-1.6.62-1.6,1.6v7.9c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62ZM263.97,79v-14h1.66v14h-1.66ZM261.87,70.72c0,1.78-1.2,2.98-2.98,2.98h-5.2v5.3h-1.66v-14h6.86c1.78,0,2.98,1.18,2.98,2.98v2.74ZM260.21,70.66v-2.62c0-.98-.62-1.6-1.6-1.6h-4.92v5.82h4.92c.98,0,1.6-.62,1.6-1.6ZM247.59,79v-10.74l-4.38,8.18-4.36-8.18v10.74h-1.66v-14h1.6l4.42,8.28,4.42-8.28h1.6v14h-1.64ZM229.59,66.76l-2.7,7.2h5.4l-2.7-7.2ZM230.63,65l5.16,14h-1.74l-1.32-3.6h-6.28l-1.32,3.6h-1.7l5.18-14h2.02ZM222.02,69.5h-1.66v-1.46c0-.98-.62-1.6-1.6-1.6h-3.92c-.98,0-1.6.62-1.6,1.6v7.9c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62v-1.44h1.66v1.52c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-8.04c0-1.8,1.2-2.98,2.98-2.98h4.48c1.78,0,2.98,1.18,2.98,2.98v1.52ZM301.11,52.02c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-8.04c0-1.8,1.2-2.98,2.98-2.98h4.48c1.78,0,2.98,1.18,2.98,2.98v8.04ZM299.45,51.94v-7.9c0-.98-.62-1.6-1.6-1.6h-3.92c-.98,0-1.6.62-1.6,1.6v7.9c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62ZM286.3,55l-7.22-10.98v10.98h-1.66v-14h1.56l7.22,10.96v-10.96h1.66v14h-1.56ZM274.62,52.02c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-8.04c0-1.8,1.2-2.98,2.98-2.98h4.48c1.78,0,2.98,1.18,2.98,2.98v8.04ZM272.96,51.94v-7.9c0-.98-.62-1.6-1.6-1.6h-3.92c-.98,0-1.6.62-1.6,1.6v7.9c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62ZM259.72,41h1.66v11.02c0,1.78-1.2,2.98-2.98,2.98h-4.48c-1.78,0-2.98-1.2-2.98-2.98v-11.02h1.66v10.94c0,.98.62,1.62,1.6,1.62h3.92c.98,0,1.6-.64,1.6-1.62v-10.94ZM245.15,47.26c1.78,0,2.98,1.2,2.98,2.98v1.78c0,1.78-1.2,2.98-2.98,2.98h-4.28c-1.78,0-2.98-1.2-2.98-2.98v-1.22h1.66v1.14c0,1,.62,1.62,1.6,1.62h3.72c.98,0,1.6-.62,1.6-1.62v-1.62c0-.98-.62-1.62-1.6-1.62h-4c-1.78,0-2.98-1.2-2.98-2.98v-1.74c0-1.8,1.2-2.98,2.98-2.98h4.28c1.78,0,2.98,1.18,2.98,2.98v1.22h-1.66v-1.16c0-.98-.62-1.6-1.6-1.6h-3.72c-.98,0-1.6.62-1.6,1.6v1.62c0,.98.62,1.6,1.6,1.6h4Z"
+            style="fill: #fff"
+          />
+          <path
+            d="M427.56,54.44v-1.44h11.3v1.44h-4.82v12.56h-1.66v-12.56h-4.82ZM422.96,54.76l-2.7,7.2h5.4l-2.7-7.2ZM424,53l5.16,14h-1.74l-1.32-3.6h-6.28l-1.32,3.6h-1.7l5.18-14h2.02ZM406.97,67v-14h9.04v1.44h-7.38v4.82h6.38v1.44h-6.38v4.86h7.38v1.44h-9.04ZM403.01,57.66v-1.62c0-.98-.62-1.6-1.6-1.6h-5.22v4.82h5.22c.98,0,1.6-.62,1.6-1.6ZM403.11,63.94v-1.62c0-1-.62-1.62-1.6-1.62h-5.32v4.86h5.32c.98,0,1.6-.64,1.6-1.62ZM404.67,55.98v1.28c0,1.32-.68,2.32-1.72,2.72,1.1.38,1.82,1.38,1.82,2.74v1.3c0,1.78-1.2,2.98-2.98,2.98h-7.26v-14h7.16c1.78,0,2.98,1.18,2.98,2.98Z"
+            style="fill: #fff"
+          />
+          <g style="clip-path: url(#clippath-4)">
+            <path
+              d="M203,19v-1c-4.42,0-8,3.58-8,8h2c0-3.31,2.69-6,6-6v-1ZM336,19v1c3.31,0,6,2.69,6,6h2c0-4.42-3.58-8-8-8v1ZM343,94h-1c0,3.31-2.69,6-6,6v2c4.42,0,8-3.58,8-8h-1ZM203,101v-1c-3.31,0-6-2.69-6-6h-2c0,4.42,3.58,8,8,8v-1ZM196,94h1V26h-2v68h1ZM336,101v-1h-133v2h133v-1ZM343,26h-1v68h2V26h-1ZM203,19v1h133v-2h-133v1Z"
+              style="fill: #fff"
+            />
+          </g>
+          <g style="clip-path: url(#clippath-5)">
+            <path
+              d="M349,19v-1c-4.42,0-8,3.58-8,8h2c0-3.31,2.69-6,6-6v-1ZM482,19v1c3.31,0,6,2.69,6,6h2c0-4.42-3.58-8-8-8v1ZM489,94h-1c0,3.31-2.69,6-6,6v2c4.42,0,8-3.58,8-8h-1ZM349,101v-1c-3.31,0-6-2.69-6-6h-2c0,4.42,3.58,8,8,8v-1ZM342,94h1V26h-2v68h1ZM482,101v-1h-133v2h133v-1ZM489,26h-1v68h2V26h-1ZM349,19v1h133v-2h-133v1Z"
+              style="fill: #fff"
+            />
+          </g>
+        </g>
+      </g>
+      <g id="BOTTONI">
+        <!-- Gruppo 1 -->
+        <g class="button-group" id="gruppo-1">
+          <rect
+            id="BASE1"
+            x="196.5"
+            y="100.5"
+            width="73"
+            height="73"
+            rx="10"
+            ry="10"
+            style="fill: #fa5004; stroke: #fff; stroke-miterlimit: 10"
+          />
+          <g id="CERCHIO1">
+            <path
+              d="M233,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"
+              style="fill: #fff"
+            />
+            <path
+              d="M233,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M233,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"
+              style="fill: #fa5004"
+            />
+          </g>
+          <g id="PLAY1">
+            <path
+              d="M228.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"
+              style="fill: #fa5004"
+            />
+            <path
+              d="M228.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M228.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73,0-.72-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"
+              style="fill: #fff"
+            />
+          </g>
+        </g>
+
+        <!-- Gruppo 2 -->
+        <g class="button-group" id="gruppo-2">
+          <rect
+            id="BASE2"
+            x="269.5"
+            y="100.5"
+            width="73"
+            height="73"
+            rx="10"
+            ry="10"
+            style="fill: #fa5004; stroke: #fff; stroke-miterlimit: 10"
+          />
+          <g id="CERCHIO2">
+            <path
+              d="M306,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"
+              style="fill: #fff"
+            />
+            <path
+              d="M306,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M306,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"
+              style="fill: #fa5004"
+            />
+          </g>
+          <g id="PAUSA2">
+            <g>
+              <path
+                d="M302.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"
+                style="fill: #fa5004"
+              />
+              <path
+                d="M302.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M302.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"
+                style="fill: #fff"
+              />
+            </g>
+            <g>
+              <path
+                d="M309.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"
+                style="fill: #fa5004"
+              />
+              <path
+                d="M309.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M309.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"
+                style="fill: #fff"
+              />
+            </g>
+          </g>
+        </g>
+
+        <!-- Gruppo 3 -->
+        <g class="button-group" id="gruppo-3">
+          <rect
+            id="BASE3"
+            x="342.5"
+            y="100.5"
+            width="73"
+            height="73"
+            rx="10"
+            ry="10"
+            style="fill: #fa5004; stroke: #fff; stroke-miterlimit: 10"
+          />
+          <g id="CERCHIO3">
+            <path
+              d="M379,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"
+              style="fill: #fff"
+            />
+            <path
+              d="M379,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M379,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"
+              style="fill: #fa5004"
+            />
+          </g>
+          <g id="PLAY3">
+            <path
+              d="M374.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"
+              style="fill: #fa5004"
+            />
+            <path
+              d="M374.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M374.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73s-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"
+              style="fill: #fff"
+            />
+          </g>
+        </g>
+
+        <!-- Gruppo 4 -->
+        <g class="button-group" id="gruppo-4">
+          <rect
+            id="BASE4"
+            x="415.5"
+            y="100.5"
+            width="73"
+            height="73"
+            rx="10"
+            ry="10"
+            style="fill: #fa5004; stroke: #fff; stroke-miterlimit: 10"
+          />
+          <g id="CERCHIO4">
+            <path
+              d="M452,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"
+              style="fill: #fff"
+            />
+            <path
+              d="M452,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M452,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"
+              style="fill: #fa5004"
+            />
+          </g>
+          <g id="PAUSA4">
+            <g>
+              <path
+                d="M448.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"
+                style="fill: #fa5004"
+              />
+              <path
+                d="M448.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M448.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"
+                style="fill: #fff"
+              />
+            </g>
+            <g>
+              <path
+                d="M455.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"
+                style="fill: #fa5004"
+              />
+              <path
+                d="M455.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M455.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"
+                style="fill: #fff"
+              />
+            </g>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </body>
+</html>
