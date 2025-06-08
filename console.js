@@ -110,61 +110,80 @@ function pauseBeat() {
   }
 }
 
-// Funzione per aggiornare stile bottoni
+// gestione stile bottoni
 function updateVisualState() {
-  //const gruppo1 = document.getElementById('gruppo-1');
-  //const gruppo2 = document.getElementById('gruppo-2');
-  const c1 = document.getElementById("BASE1");
+  const cerchio1 = document.querySelector("#CERCHIO1 path:first-child");
+  const cerchio1Border = document.querySelector("#CERCHIO1 path:nth-child(2)");
+  const cerchio2 = document.querySelector("#CERCHIO2 path:first-child");
+  const cerchio2Border = document.querySelector("#CERCHIO2 path:nth-child(2)");
+  const cerchio3 = document.querySelector("#CERCHIO3 path:first-child");
+  const cerchio3Border = document.querySelector("#CERCHIO3 path:nth-child(2)");
+  const cerchio4 = document.querySelector("#CERCHIO4 path:first-child");
+  const cerchio4Border = document.querySelector("#CERCHIO4 path:nth-child(2)");
 
-  if (isPlaying) {
-    // Quando sta suonando: gruppo1 (play) disattivato, gruppo2 (pause) attivo
-    // gruppo1.style.opacity = '0.6';
-    // gruppo2.style.opacity = '1';
-    c1.style.fill = "#fa5004";
-  } else {
-    // Quando è in pausa: gruppo1 (play) attivo, gruppo2 (pause) disattivato
-    // gruppo1.style.opacity = '1';
-    // gruppo2.style.opacity = '0.6';
-    c1.style.fill = "#fffff";
+  cerchio1Border.style.fill = "#ffffff";
+  cerchio2Border.style.fill = "#ffffff";
+  cerchio3Border.style.fill = "#ffffff";
+  cerchio4Border.style.fill = "#ffffff";
+
+  // Aggiorna CERCHIO1 basato su isSamplePlaying
+  if (cerchio1 && cerchio1Border) {
+    if (isSamplePlaying) {
+      cerchio1.style.fill = "#fa5004";
+      cerchio2.style.fill = "#ffffff";
+    } else {
+      cerchio1.style.fill = "#ffffff";
+      cerchio2.style.fill = "#fa5004";
+    }
+  }
+
+  // Aggiorna CERCHIO3 basato su isBeatPlaying
+  if (cerchio3 && cerchio3Border) {
+    if (isBeatPlaying) {
+      cerchio3.style.fill = "#fa5004";
+      cerchio4.style.fill = "#ffffff";
+    } else {
+      cerchio3.style.fill = "#ffffff";
+      cerchio4.style.fill = "#fa5004";
+    }
   }
 }
-
 // event listeners x click sui "gruppi"
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Console Audio Player inizializzato");
 
-  // Gruppo 1 - PLAY SAMPLE
-  const gruppo1 = document.getElementById("gruppo-1");
-  if (gruppo1) {
-    gruppo1.addEventListener("click", function () {
-      console.log("Click su Gruppo 1 - PLAY SAMPLE");
+  // bottone 1 - PLAY SAMPLE
+  const bottone1 = document.getElementById("bottone-1");
+  if (bottone1) {
+    bottone1.addEventListener("click", function () {
+      console.log("Click su bottone 1 - PLAY SAMPLE");
       playSample();
     });
   }
 
-  // Gruppo 2 - PAUSE SAMPLE
-  const gruppo2 = document.getElementById("gruppo-2");
-  if (gruppo2) {
-    gruppo2.addEventListener("click", function () {
-      console.log("Click su Gruppo 2 - PAUSE SAMPLE");
+  // bottone 2 - PAUSE SAMPLE
+  const bottone2 = document.getElementById("bottone-2");
+  if (bottone2) {
+    bottone2.addEventListener("click", function () {
+      console.log("Click su bottone 2 - PAUSE SAMPLE");
       pauseSample();
     });
   }
 
-  // Gruppo 3 - PLAY BEAT
-  const gruppo3 = document.getElementById("gruppo-3");
-  if (gruppo3) {
-    gruppo3.addEventListener("click", function () {
-      console.log("Click su Gruppo 3 - PLAY BEAT");
+  // bottone 3 - PLAY BEAT
+  const bottone3 = document.getElementById("bottone-3");
+  if (bottone3) {
+    bottone3.addEventListener("click", function () {
+      console.log("Click su bottone 3 - PLAY BEAT");
       playBeat();
     });
   }
 
-  // Gruppo 4 - PAUSE BEAT
-  const gruppo4 = document.getElementById("gruppo-4");
-  if (gruppo4) {
-    gruppo4.addEventListener("click", function () {
-      console.log("Click su Gruppo 4 - PAUSE BEAT");
+  // bottone 4 - PAUSE BEAT
+  const bottone4 = document.getElementById("bottone-4");
+  if (bottone4) {
+    bottone4.addEventListener("click", function () {
+      console.log("Click su bottone 4 - PAUSE BEAT");
       pauseBeat();
     });
   }
