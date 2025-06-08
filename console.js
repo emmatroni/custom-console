@@ -2,7 +2,7 @@
 
 // Inizializzazione dell'audio
 let audioSample = null;
-let audioBeat = null;
+let audio = null;
 
 let isPlaying = false;
 
