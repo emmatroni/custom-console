@@ -1,68 +1,116 @@
 // console.js - Audio Player Controller
 
-// Inizializzazione dell'audio
 let audioSample = null;
-let audio = null;
-
+let audioBeat = null;
+let isSamplePlaying = false;
+let isBeatPlaying = false;
 let isPlaying = false;
 
-// URL del file MP3
+// URL del file MP3 da inserire poi per webflow
 const MP3_SAMPLE = "./3-campione.mp3";
 const MP3_BEAT = "./3-beat.mp3";
 
-// Funzione per inizializzare l'audio
-function initAudio() {
-  if (!audio) {
-    audio = new Audio(MP3_SAMPLE);
-    audio.loop = true; // Loop continuo
+// funzioni gestione CAMPIONE
+function initAudioSample() {
+  if (!audioSample) {
+    audioSample = new Audio(MP3_SAMPLE);
+    audioSample.loop = true; // Loop continuo
 
     // Event listeners per debug
-    audio.addEventListener("loadstart", () =>
-      console.log("Audio: Caricamento iniziato")
+    audioSample.addEventListener("loadstart", () =>
+      console.log("Audio Sample: Caricamento iniziato")
     );
-    audio.addEventListener("canplay", () =>
-      console.log("Audio: Pronto per la riproduzione")
+    audioSample.addEventListener("canplay", () =>
+      console.log("Audio Sample: Pronto per la riproduzione")
     );
-    audio.addEventListener("error", (e) => console.error("Errore audio:", e));
-    audio.addEventListener("ended", () => {
-      isPlaying = false;
+    audioSample.addEventListener("error", (e) =>
+      console.error("Errore audio sample:", e)
+    );
+    audioSample.addEventListener("ended", () => {
+      isSamplePlaying = false;
       updateVisualState();
     });
   }
 }
+function playSample() {
+  initAudioSample();
 
-// Funzione per riprodurre l'audio
-function playAudio() {
-  initAudio();
-
-  if (audio && !isPlaying) {
-    audio
+  if (audioSample && !isSamplePlaying) {
+    audioSample
       .play()
       .then(() => {
-        isPlaying = true;
+        isSamplePlaying = true;
         updateVisualState();
-        console.log("Audio: Riproduzione iniziata");
+        console.log("Audio Sample: Riproduzione iniziata");
       })
       .catch((error) => {
-        console.error("Errore nella riproduzione:", error);
+        console.error("Errore nella riproduzione sample:", error);
         alert(
-          "Errore nella riproduzione dell'audio. Controlla la connessione."
+          "Errore nella riproduzione dell'audio sample. Controlla la connessione."
         );
       });
   }
 }
-
-// Funzione per mettere in pausa l'audio
-function pauseAudio() {
-  if (audio && isPlaying) {
-    audio.pause();
-    isPlaying = false;
+function pauseSample() {
+  if (audioSample && isSamplePlaying) {
+    audioSample.pause();
+    isSamplePlaying = false;
     updateVisualState();
-    console.log("Audio: In pausa");
+    console.log("Audio Sample: In pausa");
   }
 }
 
-// Funzione per aggiornare lo stato visivo dei bottoni
+// funzioni gestione BEAT
+function initAudioBeat() {
+  if (!audioBeat) {
+    audioBeat = new Audio(MP3_BEAT);
+    audioBeat.loop = true; // Loop continuo
+
+    // Event listeners per debug
+    audioBeat.addEventListener("loadstart", () =>
+      console.log("Audio Beat: Caricamento iniziato")
+    );
+    audioBeat.addEventListener("canplay", () =>
+      console.log("Audio Beat: Pronto per la riproduzione")
+    );
+    audioBeat.addEventListener("error", (e) =>
+      console.error("Errore audio beat:", e)
+    );
+    audioBeat.addEventListener("ended", () => {
+      isBeatPlaying = false;
+      updateVisualState();
+    });
+  }
+}
+function playBeat() {
+  initAudioBeat();
+
+  if (audioBeat && !isBeatPlaying) {
+    audioBeat
+      .play()
+      .then(() => {
+        isBeatPlaying = true;
+        updateVisualState();
+        console.log("Audio Beat: Riproduzione iniziata");
+      })
+      .catch((error) => {
+        console.error("Errore nella riproduzione beat:", error);
+        alert(
+          "Errore nella riproduzione dell'audio beat. Controlla la connessione."
+        );
+      });
+  }
+}
+function pauseBeat() {
+  if (audioBeat && isBeatPlaying) {
+    audioBeat.pause();
+    isBeatPlaying = false;
+    updateVisualState();
+    console.log("Audio Beat: In pausa");
+  }
+}
+
+// Funzione per aggiornare stile bottoni
 function updateVisualState() {
   //const gruppo1 = document.getElementById('gruppo-1');
   //const gruppo2 = document.getElementById('gruppo-2');
@@ -81,59 +129,79 @@ function updateVisualState() {
   }
 }
 
-// Event listeners per i click sui gruppi
+// event listeners x click sui "gruppi"
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Console Audio Player inizializzato");
 
-  // Gruppo 1 - PLAY
+  // Gruppo 1 - PLAY SAMPLE
   const gruppo1 = document.getElementById("gruppo-1");
   if (gruppo1) {
     gruppo1.addEventListener("click", function () {
-      console.log("Click su Gruppo 1 - PLAY");
-      playAudio();
+      console.log("Click su Gruppo 1 - PLAY SAMPLE");
+      playSample();
     });
   }
 
-  // Gruppo 2 - PAUSE
+  // Gruppo 2 - PAUSE SAMPLE
   const gruppo2 = document.getElementById("gruppo-2");
   if (gruppo2) {
     gruppo2.addEventListener("click", function () {
-      console.log("Click su Gruppo 2 - PAUSE");
-      pauseAudio();
+      console.log("Click su Gruppo 2 - PAUSE SAMPLE");
+      pauseSample();
     });
   }
 
-  // Inizializza lo stato visivo
+  // Gruppo 3 - PLAY BEAT
+  const gruppo3 = document.getElementById("gruppo-3");
+  if (gruppo3) {
+    gruppo3.addEventListener("click", function () {
+      console.log("Click su Gruppo 3 - PLAY BEAT");
+      playBeat();
+    });
+  }
+
+  // Gruppo 4 - PAUSE BEAT
+  const gruppo4 = document.getElementById("gruppo-4");
+  if (gruppo4) {
+    gruppo4.addEventListener("click", function () {
+      console.log("Click su Gruppo 4 - PAUSE BEAT");
+      pauseBeat();
+    });
+  }
+
   updateVisualState();
 
-  // Precarica l'audio (opzionale)
+  // precarica gli audio
   setTimeout(() => {
-    initAudio();
+    initAudioSample();
+    initAudioBeat();
   }, 1000);
 });
 
 // Funzioni di controllo aggiuntive (opzionali)
-function setVolume(volume) {
-  if (audio) {
-    audio.volume = Math.max(0, Math.min(1, volume)); // Clamp tra 0 e 1
-    console.log(`Volume impostato a: ${audio.volume * 100}%`);
+function setSampleVolume(volume) {
+  if (audioSample) {
+    audioSample.volume = Math.max(0, Math.min(1, volume));
+    console.log(`Volume Sample impostato a: ${audioSample.volume * 100}%`);
   }
 }
 
-function getCurrentTime() {
-  return audio ? audio.currentTime : 0;
-}
-
-function getDuration() {
-  return audio ? audio.duration : 0;
+// Funzioni di controllo aggiuntive per BEAT
+function setBeatVolume(volume) {
+  if (audioBeat) {
+    audioBeat.volume = Math.max(0, Math.min(1, volume));
+    console.log(`Volume Beat impostato a: ${audioBeat.volume * 100}%`);
+  }
 }
 
 // Export per uso esterno (se necessario)
 window.audioPlayer = {
-  play: playAudio,
-  pause: pauseAudio,
-  setVolume: setVolume,
-  getCurrentTime: getCurrentTime,
-  getDuration: getDuration,
-  isPlaying: () => isPlaying,
+  playSample: playSample,
+  pauseSample: pauseSample,
+  playBeat: playBeat,
+  pauseBeat: pauseBeat,
+  setSampleVolume: setSampleVolume,
+  setBeatVolume: setBeatVolume,
+  isSamplePlaying: () => isSamplePlaying,
+  isBeatPlaying: () => isBeatPlaying,
 };
