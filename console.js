@@ -4,7 +4,6 @@ let audioSample = null;
 let audioBeat = null;
 let isSamplePlaying = false;
 let isBeatPlaying = false;
-let isPlaying = false;
 
 // URL del file MP3 da inserire poi per webflow
 const MP3_SAMPLE = "./3-campione.mp3";

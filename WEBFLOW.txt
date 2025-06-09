@@ -1,0 +1,301 @@
+<script>
+// Audio Player Controller - inside body tag
+
+let audioSample = null;
+let audioBeat = null;
+let isSamplePlaying = false;
+let isBeatPlaying = false;
+
+const MP3_SAMPLE = "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main/calendario-campione.mp3";
+const MP3_BEAT = "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main/calendario-beat.mp3";
+
+// SVG markup
+const svgMarkup = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 464 215">
+  <g id="bottone-1">
+    <rect id="BASE1" class="cls-2" x="153.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO1">
+      <path class="cls-1 cursor-hover" d="M190,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M190,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M190,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PLAY1">
+      <path class="cls-3 cursor-hover" d="M185.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"/>
+      <path class="cls-1 cursor-hover" d="M185.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M185.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73s-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"/>
+    </g>
+  </g>
+  <g id="bottone-2">
+    <rect id="BASE2" class="cls-2" x="226.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO2">
+      <path class="cls-1 cursor-hover" d="M263,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M263,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M263,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PAUSA2">
+      <g>
+        <path class="cls-3 cursor-hover" d="M259.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M259.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M259.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+      <g>
+        <path class="cls-3 cursor-hover" d="M266.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M266.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M266.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+    </g>
+  </g>
+  <g id="bottone-3">
+    <rect id="BASE3" class="cls-2" x="299.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO3">
+      <path class="cls-1 cursor-hover" d="M336,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M336,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M336,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PLAY3">
+      <path class="cls-3 cursor-hover" d="M331.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"/>
+      <path class="cls-1 cursor-hover" d="M331.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M331.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73s-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"/>
+    </g>
+  </g>
+  <g id="bottone-4">
+    <rect id="BASE4" class="cls-2" x="372.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO4">
+      <path class="cls-1 cursor-hover" d="M409,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M409,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M409,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PAUSA4">
+      <g>
+        <path class="cls-3 cursor-hover" d="M405.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M405.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M405.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+      <g>
+        <path class="cls-3 cursor-hover" d="M412.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M412.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M412.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
+`;
+
+// Sample audio functions
+function initAudioSample() {
+  if (!audioSample) {
+    audioSample = new Audio(MP3_SAMPLE);
+    audioSample.loop = true;
+    
+    audioSample.addEventListener("loadstart", () =>
+      console.log("Audio Sample: Loading started")
+    );
+    audioSample.addEventListener("canplay", () =>
+      console.log("Audio Sample: Ready to play")
+    );
+    audioSample.addEventListener("error", (e) =>
+      console.error("Sample audio error:", e)
+    );
+    audioSample.addEventListener("ended", () => {
+      isSamplePlaying = false;
+      updateVisualState();
+    });
+  }
+}
+
+function playSample() {
+  initAudioSample();
+  
+  if (audioSample && !isSamplePlaying) {
+    audioSample.play()
+      .then(() => {
+        isSamplePlaying = true;
+        updateVisualState();
+        console.log("Audio Sample: Playing");
+      })
+      .catch((error) => {
+        console.error("Sample playback error:", error);
+      });
+  }
+}
+
+function pauseSample() {
+  if (audioSample && isSamplePlaying) {
+    audioSample.pause();
+    isSamplePlaying = false;
+    updateVisualState();
+    console.log("Audio Sample: Paused");
+  }
+}
+
+// Beat audio functions
+function initAudioBeat() {
+  if (!audioBeat) {
+    audioBeat = new Audio(MP3_BEAT);
+    audioBeat.loop = true;
+    
+    audioBeat.addEventListener("loadstart", () =>
+      console.log("Audio Beat: Loading started")
+    );
+    audioBeat.addEventListener("canplay", () =>
+      console.log("Audio Beat: Ready to play")
+    );
+    audioBeat.addEventListener("error", (e) =>
+      console.error("Beat audio error:", e)
+    );
+    audioBeat.addEventListener("ended", () => {
+      isBeatPlaying = false;
+      updateVisualState();
+    });
+  }
+}
+
+function playBeat() {
+  initAudioBeat();
+  
+  if (audioBeat && !isBeatPlaying) {
+    audioBeat.play()
+      .then(() => {
+        isBeatPlaying = true;
+        updateVisualState();
+        console.log("Audio Beat: Playing");
+      })
+      .catch((error) => {
+        console.error("Beat playback error:", error);
+      });
+  }
+}
+
+function pauseBeat() {
+  if (audioBeat && isBeatPlaying) {
+    audioBeat.pause();
+    isBeatPlaying = false;
+    updateVisualState();
+    console.log("Audio Beat: Paused");
+  }
+}
+
+// Visual state management
+function updateVisualState() {
+  const container = document.querySelector("#console-btns");
+  if (!container) return;
+
+  const cerchio1 = container.querySelector("#CERCHIO1 path:first-child");
+  const cerchio1Border = container.querySelector("#CERCHIO1 path:nth-child(2)");
+  const cerchio2 = container.querySelector("#CERCHIO2 path:first-child");
+  const cerchio2Border = container.querySelector("#CERCHIO2 path:nth-child(2)");
+  const cerchio3 = container.querySelector("#CERCHIO3 path:first-child");
+  const cerchio3Border = container.querySelector("#CERCHIO3 path:nth-child(2)");
+  const cerchio4 = container.querySelector("#CERCHIO4 path:first-child");
+  const cerchio4Border = container.querySelector("#CERCHIO4 path:nth-child(2)");
+
+  // Reset borders
+  [cerchio1Border, cerchio2Border, cerchio3Border, cerchio4Border].forEach(border => {
+    if (border) border.style.fill = "#ffffff";
+  });
+
+  // Update sample buttons
+  if (cerchio1 && cerchio2) {
+    if (isSamplePlaying) {
+      cerchio1.style.fill = "#fa5004";
+      cerchio2.style.fill = "#ffffff";
+    } else {
+      cerchio1.style.fill = "#ffffff";
+      cerchio2.style.fill = "#fa5004";
+    }
+  }
+
+  // Update beat buttons
+  if (cerchio3 && cerchio4) {
+    if (isBeatPlaying) {
+      cerchio3.style.fill = "#fa5004";
+      cerchio4.style.fill = "#ffffff";
+    } else {
+      cerchio3.style.fill = "#ffffff";
+      cerchio4.style.fill = "#fa5004";
+    }
+  }
+}
+
+// Volume controls
+function setSampleVolume(volume) {
+  if (audioSample) {
+    audioSample.volume = Math.max(0, Math.min(1, volume));
+    console.log(`Sample volume: ${audioSample.volume * 100}%`);
+  }
+}
+
+function setBeatVolume(volume) {
+  if (audioBeat) {
+    audioBeat.volume = Math.max(0, Math.min(1, volume));
+    console.log(`Beat volume: ${audioBeat.volume * 100}%`);
+  }
+}
+
+// Initialize when DOM is ready
+function initAudioPlayer() {
+  const container = document.getElementById("console-btns");
+  
+  if (!container) {
+    console.error("Element with id 'console-btns' not found");
+    return;
+  }
+
+  // Inject SVG
+  container.innerHTML = svgMarkup;
+  
+  // Add event listeners
+  const bottone1 = container.querySelector("#bottone-1");
+  const bottone2 = container.querySelector("#bottone-2");
+  const bottone3 = container.querySelector("#bottone-3");
+  const bottone4 = container.querySelector("#bottone-4");
+
+  if (bottone1) {
+    bottone1.addEventListener("click", () => {
+      console.log("Play Sample clicked");
+      playSample();
+    });
+  }
+
+  if (bottone2) {
+    bottone2.addEventListener("click", () => {
+      console.log("Pause Sample clicked");
+      pauseSample();
+    });
+  }
+
+  if (bottone3) {
+    bottone3.addEventListener("click", () => {
+      console.log("Play Beat clicked");
+      playBeat();
+    });
+  }
+
+  if (bottone4) {
+    bottone4.addEventListener("click", () => {
+      console.log("Pause Beat clicked");
+      pauseBeat();
+    });
+  }
+
+  updateVisualState();
+
+  // Preload audio after 1 second
+  setTimeout(() => {
+    initAudioSample();
+    initAudioBeat();
+  }, 1000);
+
+  console.log("Audio Player initialized");
+}
+
+// Auto-initialize or provide manual init
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAudioPlayer);
+} else {
+  initAudioPlayer();
+}
+
+// Export API
+window.audioPlayer = {
+  playSample: playSample,
+  pauseSample: pauseSample,
+  playBeat: playBeat,
+  pauseBeat: pauseBeat,
+  setSampleVolume: setSampleVolume,
+  setBeatVolume: setBeatVolume,
+  isSamplePlaying: () => isSamplePlaying,
+  isBeatPlaying: () => isBeatPlaying,
+  init: initAudioPlayer
+};
+</script>
