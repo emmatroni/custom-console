@@ -1,4 +1,5 @@
-// console desktop
+// condoleMobile
+
 let audioSample = null;
 let audioBeat = null;
 let isSamplePlaying = false;
@@ -26,7 +27,7 @@ function initAudioSample() {
     );
     audioSample.addEventListener("ended", () => {
       isSamplePlaying = false;
-      updateVisualState();
+      //   updateVisualState();
     });
   }
 }
@@ -38,7 +39,7 @@ function playSample() {
       .play()
       .then(() => {
         isSamplePlaying = true;
-        updateVisualState();
+        // updateVisualState();
         console.log("Audio Sample: Riproduzione iniziata");
       })
       .catch((error) => {
@@ -53,7 +54,7 @@ function pauseSample() {
   if (audioSample && isSamplePlaying) {
     audioSample.pause();
     isSamplePlaying = false;
-    updateVisualState();
+    // updateVisualState();
     console.log("Audio Sample: In pausa");
   }
 }
@@ -76,7 +77,7 @@ function initAudioBeat() {
     );
     audioBeat.addEventListener("ended", () => {
       isBeatPlaying = false;
-      updateVisualState();
+      //   updateVisualState();
     });
   }
 }
@@ -88,7 +89,7 @@ function playBeat() {
       .play()
       .then(() => {
         isBeatPlaying = true;
-        updateVisualState();
+        // updateVisualState();
         console.log("Audio Beat: Riproduzione iniziata");
       })
       .catch((error) => {
@@ -103,90 +104,87 @@ function pauseBeat() {
   if (audioBeat && isBeatPlaying) {
     audioBeat.pause();
     isBeatPlaying = false;
-    updateVisualState();
+    // updateVisualState();
     console.log("Audio Beat: In pausa");
   }
 }
 
 // gestione stile bottoni
-function updateVisualState() {
-  const cerchio1 = document.querySelector("#CERCHIO1 path:first-child");
-  const cerchio1Border = document.querySelector("#CERCHIO1 path:nth-child(2)");
-  const cerchio2 = document.querySelector("#CERCHIO2 path:first-child");
-  const cerchio2Border = document.querySelector("#CERCHIO2 path:nth-child(2)");
-  const cerchio3 = document.querySelector("#CERCHIO3 path:first-child");
-  const cerchio3Border = document.querySelector("#CERCHIO3 path:nth-child(2)");
-  const cerchio4 = document.querySelector("#CERCHIO4 path:first-child");
-  const cerchio4Border = document.querySelector("#CERCHIO4 path:nth-child(2)");
-
-  cerchio1Border.style.fill = "#ffffff";
-  cerchio2Border.style.fill = "#ffffff";
-  cerchio3Border.style.fill = "#ffffff";
-  cerchio4Border.style.fill = "#ffffff";
-
-  // Aggiorna CERCHIO1 basato su isSamplePlaying
-  if (cerchio1 && cerchio1Border) {
-    if (isSamplePlaying) {
-      cerchio1.style.fill = "#fa5004";
-      cerchio2.style.fill = "#ffffff";
-    } else {
-      cerchio1.style.fill = "#ffffff";
-      cerchio2.style.fill = "#fa5004";
-    }
-  }
-
-  // Aggiorna CERCHIO3 basato su isBeatPlaying
-  if (cerchio3 && cerchio3Border) {
-    if (isBeatPlaying) {
-      cerchio3.style.fill = "#fa5004";
-      cerchio4.style.fill = "#ffffff";
-    } else {
-      cerchio3.style.fill = "#ffffff";
-      cerchio4.style.fill = "#fa5004";
-    }
-  }
-}
+// function updateVisualState() {
+//     const cerchio1 = document.querySelector("#CERCHIO1 path:first-child");
+//     const cerchio1Border = document.querySelector("#CERCHIO1 path:nth-child(2)");
+//     const cerchio2 = document.querySelector("#CERCHIO2 path:first-child");
+//     const cerchio2Border = document.querySelector("#CERCHIO2 path:nth-child(2)");
+//     const cerchio3 = document.querySelector("#CERCHIO3 path:first-child");
+//     const cerchio3Border = document.querySelector("#CERCHIO3 path:nth-child(2)");
+//     const cerchio4 = document.querySelector("#CERCHIO4 path:first-child");
+//     const cerchio4Border = document.querySelector("#CERCHIO4 path:nth-child(2)");
+//     cerchio1Border.style.fill = "#ffffff";
+//     cerchio2Border.style.fill = "#ffffff";
+//     cerchio3Border.style.fill = "#ffffff";
+//     cerchio4Border.style.fill = "#ffffff";
+//     // Aggiorna CERCHIO1 basato su isSamplePlaying
+//     if (cerchio1 && cerchio1Border) {
+//       if (isSamplePlaying) {
+//         cerchio1.style.fill = "#fa5004";
+//         cerchio2.style.fill = "#ffffff";
+//       } else {
+//         cerchio1.style.fill = "#ffffff";
+//         cerchio2.style.fill = "#fa5004";
+//       }
+//     }
+//     // Aggiorna CERCHIO3 basato su isBeatPlaying
+//     if (cerchio3 && cerchio3Border) {
+//       if (isBeatPlaying) {
+//         cerchio3.style.fill = "#fa5004";
+//         cerchio4.style.fill = "#ffffff";
+//       } else {
+//         cerchio3.style.fill = "#ffffff";
+//         cerchio4.style.fill = "#fa5004";
+//       }
+//     }
+// }
 // event listeners x click sui "gruppi"
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Console Audio Player inizializzato");
 
-  // bottone 1 - PLAY SAMPLE
-  const bottone1 = document.getElementById("bottone-1");
-  if (bottone1) {
-    bottone1.addEventListener("click", function () {
-      console.log("Click su bottone 1 - PLAY SAMPLE");
+  // PLAY SAMPLE
+  const bottone2 = document.getElementById("bottone2Mobile");
+  if (bottone2) {
+    bottone2.addEventListener("click", function () {
+      console.log("Click su bottone 2 - PLAY SAMPLE");
       playSample();
     });
   }
 
-  // bottone 2 - PAUSE SAMPLE
-  const bottone2 = document.getElementById("bottone-2");
-  if (bottone2) {
-    bottone2.addEventListener("click", function () {
-      console.log("Click su bottone 2 - PAUSE SAMPLE");
+  //  PAUSE SAMPLE
+  const bottone3 = document.getElementById("bottone3Mobile");
+  if (bottone3) {
+    bottone3.addEventListener("click", function () {
+      console.log("Click su bottone 3 - PAUSE SAMPLE");
       pauseSample();
     });
   }
 
-  // bottone 3 - PLAY BEAT
-  const bottone3 = document.getElementById("bottone-3");
-  if (bottone3) {
-    bottone3.addEventListener("click", function () {
-      console.log("Click su bottone 3 - PLAY BEAT");
+  //  PLAY BEAT
+  const bottone4 = document.getElementById("bottone4Mobile");
+  if (bottone4) {
+    bottone4.addEventListener("click", function () {
+      console.log("Click su bottone 4 - PLAY BEAT");
       playBeat();
     });
   }
 
-  // bottone 4 - PAUSE BEAT
-  const bottone4 = document.getElementById("bottone-4");
-  if (bottone4) {
-    bottone4.addEventListener("click", function () {
-      console.log("Click su bottone 4 - PAUSE BEAT");
+  // PAUSE BEAT
+  const bottone5 = document.getElementById("bottone5Mobile");
+  if (bottone5) {
+    bottone5.addEventListener("click", function () {
+      console.log("Click su bottone 5 - PAUSE BEAT");
       pauseBeat();
     });
   }
 
-  updateVisualState();
+  //   updateVisualState();
 
   // precarica gli audio
   setTimeout(() => {
