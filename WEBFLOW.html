@@ -4,8 +4,18 @@
   let audioBeat = null;
   let isSamplePlaying = false;
   let isBeatPlaying = false;
-  // CMS Navigation functionality
-  let cmsNames = [];
+  const cmsPageNames = [
+    "natura",
+    "ping-pong",
+    "occhiali",
+    "passaporto",
+    "cucina",
+    "liquore",
+    "spartito",
+    "pianola",
+    "vinile",
+    "calendario",
+  ];
 
   const MP3_SAMPLE =
     "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main/natura-campione.mp3";
@@ -586,68 +596,35 @@
     }
   }
 
-  // CMS Navigation functionality
-  const YOUR_API_TOKEN = "your_actual_api_token_here";
-
-  // Updated fetchCMSNames function
-  async function fetchCMSNames() {
-    try {
-      // Get collection ID dynamically from current CMS page
-      const collectionId = page.getCollectionID();
-
-      if (!collectionId) {
-        console.error("Could not get collection ID from current page");
-        return;
-      }
-
-      const response = await fetch(
-        `https://api.webflow.com/v2/collections/${collectionId}/items`,
-        {
-          headers: {
-            Authorization: `Bearer ${YOUR_API_TOKEN}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      cmsNames = data.items.map((item) => item.fieldData.name);
-      console.log("CMS names loaded:", cmsNames);
-    } catch (error) {
-      console.error("Failed to fetch CMS data:", error);
-    }
-  }
-  function navigateToPrevious() {
-    if (cmsNames.length === 0) {
-      console.warn("CMS names not loaded yet");
-      return;
-    }
-
-    // Get current page name from URL
+  function navigateToPreviousManual() {
+    // Get current page slug from URL
     const currentPath = window.location.pathname;
-    const currentName = currentPath.split("/").pop();
+    const currentSlug = currentPath.split("/").pop();
 
     // Find current index
-    const currentIndex = cmsNames.indexOf(currentName);
+    const currentIndex = cmsPageNames.indexOf(currentSlug);
 
     if (currentIndex === -1) {
-      console.warn("Current page not found in CMS names");
+      console.warn("Current page not found in manual list");
+      // Fallback to browser back
+      window.history.back();
       return;
     }
 
     // Get previous index (wrap to end if at beginning)
     const previousIndex =
-      currentIndex === 0 ? cmsNames.length - 1 : currentIndex - 1;
-    const previousName = cmsNames[previousIndex];
+      currentIndex === 0 ? cmsPageNames.length - 1 : currentIndex - 1;
+    const previousSlug = cmsPageNames[previousIndex];
 
     // Build new URL
     const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
-    const newUrl = `${window.location.origin}${basePath}/${previousName}`;
+    const newUrl = `${window.location.origin}${basePath}/${previousSlug}`;
 
     // Navigate
     window.location.href = newUrl;
   }
 
-  // Add to existing setupMobileButtons function
+  // Updated mobile button setup - remove API-related code
   function setupMobileButtons(containerMobile) {
     const mobileBtn1 = containerMobile.querySelector("#mobileBtn1");
     const mobileBtn2 = containerMobile.querySelector("#mobileBtn2");
@@ -656,20 +633,19 @@
     const mobileBtn5 = containerMobile.querySelector("#mobileBtn5");
     const mobileBtn6 = containerMobile.querySelector("#mobileBtn6");
 
-    // NEW: Previous page navigation
+    // Previous page navigation (choose one method)
     if (mobileBtn1) {
       mobileBtn1.addEventListener(
         "touchstart",
         (e) => {
           e.preventDefault();
           console.log("Previous page touched");
-          navigateToPrevious();
+          navigateToPreviousManual(); // Use manual CMS navigation
         },
         { passive: false }
       );
     }
 
-    // Existing functionality...
     if (mobileBtn2) {
       mobileBtn2.addEventListener(
         "touchstart",
@@ -714,19 +690,11 @@
       );
     }
   }
-
   // Auto-initialize or provide manual init
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAudioPlayer);
   } else {
     initAudioPlayer();
-  }
-
-  // Initialize CMS data when page loads
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", fetchCMSNames);
-  } else {
-    fetchCMSNames();
   }
 
   // Export API
