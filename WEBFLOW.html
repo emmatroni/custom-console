@@ -405,105 +405,119 @@
   function updateVisualState() {
     const container = document.querySelector("#console-btns");
     const containerMobile = document.querySelector("#mobileConsoleBtns");
-    if (!container) return;
-    if (!containerMobile) return;
 
-    // desktop btns
-    const cerchio1 = container.querySelector("#CERCHIO1 path:first-child");
-    const cerchio1Border = container.querySelector(
-      "#CERCHIO1 path:nth-child(2)"
-    );
-    const cerchio2 = container.querySelector("#CERCHIO2 path:first-child");
-    const cerchio2Border = container.querySelector(
-      "#CERCHIO2 path:nth-child(2)"
-    );
-    const cerchio3 = container.querySelector("#CERCHIO3 path:first-child");
-    const cerchio3Border = container.querySelector(
-      "#CERCHIO3 path:nth-child(2)"
-    );
-    const cerchio4 = container.querySelector("#CERCHIO4 path:first-child");
-    const cerchio4Border = container.querySelector(
-      "#CERCHIO4 path:nth-child(2)"
-    );
+    // Helper function to set fill color
+    function setFill(element, color) {
+      if (element) element.style.fill = color;
+    }
 
-    // Reset borders
-    [cerchio1Border, cerchio2Border, cerchio3Border, cerchio4Border].forEach(
-      (border) => {
-        if (border) border.style.fill = "#ffffff";
-      }
-    );
+    // Helper function to set fill for multiple elements
+    function setFillMultiple(elements, color) {
+      elements.forEach((el) => setFill(el, color));
+    }
 
-    // Update sample buttons
-    if (cerchio1 && cerchio2) {
+    // Update desktop buttons
+    if (container) {
+      const desktop = {
+        sample: {
+          play: container.querySelector("#CERCHIO1 path:first-child"),
+          pause: container.querySelector("#CERCHIO2 path:first-child"),
+          borders: [
+            container.querySelector("#CERCHIO1 path:nth-child(2)"),
+            container.querySelector("#CERCHIO2 path:nth-child(2)"),
+          ],
+        },
+        beat: {
+          play: container.querySelector("#CERCHIO3 path:first-child"),
+          pause: container.querySelector("#CERCHIO4 path:first-child"),
+          borders: [
+            container.querySelector("#CERCHIO3 path:nth-child(2)"),
+            container.querySelector("#CERCHIO4 path:nth-child(2)"),
+          ],
+        },
+      };
+
+      // Reset borders
+      setFillMultiple(
+        [...desktop.sample.borders, ...desktop.beat.borders],
+        "#ffffff"
+      );
+
+      // Update states
+      const orange = "#fa5004",
+        white = "#ffffff";
+
+      // Sample buttons
+      setFill(desktop.sample.play, isSamplePlaying ? orange : white);
+      setFill(desktop.sample.pause, isSamplePlaying ? white : orange);
+
+      // Beat buttons
+      setFill(desktop.beat.play, isBeatPlaying ? orange : white);
+      setFill(desktop.beat.pause, isBeatPlaying ? white : orange);
+    }
+
+    // Update mobile buttons
+    if (containerMobile) {
+      const mobile = {
+        sample: {
+          playCircle: containerMobile.querySelector(
+            "#mobileBtn2 #cerchio2 path:first-child"
+          ),
+          playCircleBorder: containerMobile.querySelector(
+            "#mobileBtn2 #cerchio2 path:nth-child(2)"
+          ),
+          playIcon: containerMobile.querySelector("#play2"),
+          pauseCircle: containerMobile.querySelector(
+            "#mobileBtn3 #cerchio3 path:first-child"
+          ),
+          pauseIcons: containerMobile.querySelectorAll("#pausa3 path"),
+        },
+        beat: {
+          playCircle: containerMobile.querySelector(
+            "#mobileBtn4 #cerchio4 path:first-child"
+          ),
+          playCircleBorder: containerMobile.querySelector(
+            "#mobileBtn4 #cerchio4 path:nth-child(2)"
+          ),
+          playIcon: containerMobile.querySelector("#play4"),
+          pauseCircle: containerMobile.querySelector(
+            "#mobileBtn5 #cerchio5 path:first-child"
+          ),
+          pauseIcons: containerMobile.querySelectorAll("#pausa5 path"),
+        },
+      };
+
+      const orange = "#fa5004",
+        white = "#ffffff";
+
+      // Sample state
       if (isSamplePlaying) {
-        cerchio1.style.fill = "#fa5004";
-        cerchio2.style.fill = "#ffffff";
+        setFill(mobile.sample.playCircle, orange);
+        setFill(mobile.sample.playIcon, white);
+        setFill(mobile.sample.playCircleBorder, white);
+        setFill(mobile.sample.pauseCircle, white);
+        setFillMultiple([...mobile.sample.pauseIcons], orange);
       } else {
-        cerchio1.style.fill = "#ffffff";
-        cerchio2.style.fill = "#fa5004";
+        setFill(mobile.sample.playCircle, white);
+        setFill(mobile.sample.playIcon, orange);
+        setFill(mobile.sample.playCircleBorder, orange);
+        setFill(mobile.sample.pauseCircle, orange);
+        setFillMultiple([...mobile.sample.pauseIcons], white);
       }
-    }
 
-    // Update beat buttons
-    if (cerchio3 && cerchio4) {
+      // Beat state
       if (isBeatPlaying) {
-        cerchio3.style.fill = "#fa5004";
-        cerchio4.style.fill = "#ffffff";
+        setFill(mobile.beat.playCircle, orange);
+        setFill(mobile.beat.playIcon, white);
+        setFill(mobile.beat.playCircleBorder, white);
+        setFill(mobile.beat.pauseCircle, white);
+        setFillMultiple([...mobile.beat.pauseIcons], orange);
       } else {
-        cerchio3.style.fill = "#ffffff";
-        cerchio4.style.fill = "#fa5004";
-      }
-    }
-
-    // MOBILE
-    cerchioMobile2 = containerMobile.querySelector(
-      "#mobileBtn2 #cerchio2 path:first-child"
-    );
-    cerchioMobile2Border = containerMobile.querySelector(
-      "#mobileBtn2 #cerchio2 path:nth-child(2)"
-    );
-    cerchioMobile3 = containerMobile.querySelector(
-      "#mobileBtn3 #cerchio3 path:first-child"
-    );
-    cerchioMobile3Border = containerMobile.querySelector(
-      "#mobileBtn3 #cerchio3 path:nth-child(2)"
-    );
-    cerchioMobile4 = containerMobile.querySelector(
-      "#mobileBtn4 #cerchio4 path:first-child"
-    );
-    cerchioMobile4Border = containerMobile.querySelector(
-      "#mobileBtn4 #cerchio4 path:nth-child(2)"
-    );
-    cerchioMobile5 = containerMobile.querySelector(
-      "#mobileBtn5 #cerchio5 path:first-child"
-    );
-    cerchioMobile5Border = containerMobile.querySelector(
-      "#mobileBtn5 #cerchio5 path:nth-child(2)"
-    );
-    [cerchioMobile2, cerchioMobile4, cerchioMobile4, cerchioMobile5].forEach(
-      (border) => {
-        if (border) border.style.fill = "#ffffff";
-      }
-    );
-
-    if (cerchioMobile2 && cerchioMobile3) {
-      if (isSamplePlaying) {
-        cerchioMobile2.style.fill = "#fa5004";
-        cerchioMobile3.style.fill = "#ffffff";
-      } else {
-        cerchioMobile2.style.fill = "#ffffff";
-        cerchioMobile3.style.fill = "#fa5004";
-      }
-    }
-
-    // Update beat buttons
-    if (cerchioMobile4 && cerchioMobile5) {
-      if (isBeatPlaying) {
-        cerchioMobile4.style.fill = "#fa5004";
-        cerchioMobile5.style.fill = "#ffffff";
-      } else {
-        cerchioMobile4.style.fill = "#ffffff";
-        cerchioMobile5.style.fill = "#fa5004";
+        setFill(mobile.beat.playCircle, white);
+        setFill(mobile.beat.playIcon, orange);
+        setFill(mobile.beat.playCircleBorder, orange);
+        setFill(mobile.beat.pauseCircle, orange);
+        setFillMultiple([...mobile.beat.pauseIcons], white);
       }
     }
   }
