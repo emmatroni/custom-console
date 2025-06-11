@@ -606,8 +606,11 @@
 
     if (currentIndex === -1) {
       console.warn("Current page not found in manual list");
-      // Fallback to browser back
-      window.history.back();
+      // Fallback: vai all'ultimo elemento della lista
+      const lastSlug = cmsPageNames[cmsPageNames.length - 1]; // "calendario"
+      const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+      const newUrl = `${window.location.origin}${basePath}/${lastSlug}`;
+      window.location.href = newUrl;
       return;
     }
 
@@ -623,8 +626,37 @@
     // Navigate
     window.location.href = newUrl;
   }
+  function navigateToNextManual() {
+    const currentPath = window.location.pathname;
+    const currentSlug = currentPath.split("/").pop();
 
-  // Updated mobile button setup - remove API-related code
+    // trova index
+    const currentIndex = cmsPageNames.indexOf(currentSlug);
+
+    if (currentIndex === -1) {
+      console.warn("Current page not found in manual list");
+      // Fallback: vai al primo elemento della lista
+      const firstSlug = cmsPageNames[0]; // "natura"
+      const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+      const newUrl = `${window.location.origin}${basePath}/${firstSlug}`;
+      window.location.href = newUrl;
+      return;
+    }
+
+    // Get next index (wrap to beginning if at end)
+    const nextIndex = (currentIndex + 1) % cmsPageNames.length;
+    const nextSlug = cmsPageNames[nextIndex];
+
+    // Build new URL
+    const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
+    const newUrl = `${window.location.origin}${basePath}/${nextSlug}`;
+
+    // Navigate
+    window.location.href = newUrl;
+  }
+
+  // Update setupMobileButtons function to add mobileBtn6 functionality:
+
   function setupMobileButtons(containerMobile) {
     const mobileBtn1 = containerMobile.querySelector("#mobileBtn1");
     const mobileBtn2 = containerMobile.querySelector("#mobileBtn2");
@@ -633,19 +665,20 @@
     const mobileBtn5 = containerMobile.querySelector("#mobileBtn5");
     const mobileBtn6 = containerMobile.querySelector("#mobileBtn6");
 
-    // Previous page navigation (choose one method)
+    // Previous page navigation
     if (mobileBtn1) {
       mobileBtn1.addEventListener(
         "touchstart",
         (e) => {
           e.preventDefault();
           console.log("Previous page touched");
-          navigateToPreviousManual(); // Use manual CMS navigation
+          navigateToPreviousManual();
         },
         { passive: false }
       );
     }
 
+    // Audio controls
     if (mobileBtn2) {
       mobileBtn2.addEventListener(
         "touchstart",
@@ -689,7 +722,21 @@
         { passive: true }
       );
     }
+
+    // Next page navigation
+    if (mobileBtn6) {
+      mobileBtn6.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          console.log("Next page touched");
+          navigateToNextManual();
+        },
+        { passive: false }
+      );
+    }
   }
+
   // Auto-initialize or provide manual init
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAudioPlayer);
