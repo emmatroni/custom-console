@@ -405,120 +405,109 @@
   function updateVisualState() {
     const container = document.querySelector("#console-btns");
     const containerMobile = document.querySelector("#mobileConsoleBtns");
+    const orange = "#fa5004",
+      white = "#ffffff";
 
-    // Helper function to set fill color
     function setFill(element, color) {
       if (element) element.style.fill = color;
     }
 
-    // Helper function to set fill for multiple elements
-    function setFillMultiple(elements, color) {
+    function setFillAll(elements, color) {
       elements.forEach((el) => setFill(el, color));
     }
 
-    // Update desktop buttons
-    if (container) {
-      const desktop = {
-        sample: {
-          play: container.querySelector("#CERCHIO1 path:first-child"),
-          pause: container.querySelector("#CERCHIO2 path:first-child"),
-          borders: [
-            container.querySelector("#CERCHIO1 path:nth-child(2)"),
-            container.querySelector("#CERCHIO2 path:nth-child(2)"),
-          ],
-        },
-        beat: {
-          play: container.querySelector("#CERCHIO3 path:first-child"),
-          pause: container.querySelector("#CERCHIO4 path:first-child"),
-          borders: [
-            container.querySelector("#CERCHIO3 path:nth-child(2)"),
-            container.querySelector("#CERCHIO4 path:nth-child(2)"),
-          ],
-        },
-      };
-
-      // Reset borders
-      setFillMultiple(
-        [...desktop.sample.borders, ...desktop.beat.borders],
-        "#ffffff"
-      );
-
-      // Update states
-      const orange = "#fa5004",
-        white = "#ffffff";
-
-      // Sample buttons
-      setFill(desktop.sample.play, isSamplePlaying ? orange : white);
-      setFill(desktop.sample.pause, isSamplePlaying ? white : orange);
-
-      // Beat buttons
-      setFill(desktop.beat.play, isBeatPlaying ? orange : white);
-      setFill(desktop.beat.pause, isBeatPlaying ? white : orange);
+    function applyState(elements, states) {
+      Object.entries(states).forEach(([key, color]) => {
+        if (Array.isArray(elements[key])) {
+          setFillAll(elements[key], color);
+        } else {
+          setFill(elements[key], color);
+        }
+      });
     }
 
-    // Update mobile buttons
-    if (containerMobile) {
-      const mobile = {
-        sample: {
-          playCircle: containerMobile.querySelector(
-            "#mobileBtn2 #cerchio2 path:first-child"
-          ),
-          playCircleBorder: containerMobile.querySelector(
-            "#mobileBtn2 #cerchio2 path:nth-child(2)"
-          ),
-          playIcon: containerMobile.querySelector("#play2"),
-          pauseCircle: containerMobile.querySelector(
-            "#mobileBtn3 #cerchio3 path:first-child"
-          ),
-          pauseIcons: containerMobile.querySelectorAll("#pausa3 path"),
-        },
-        beat: {
-          playCircle: containerMobile.querySelector(
-            "#mobileBtn4 #cerchio4 path:first-child"
-          ),
-          playCircleBorder: containerMobile.querySelector(
-            "#mobileBtn4 #cerchio4 path:nth-child(2)"
-          ),
-          playIcon: containerMobile.querySelector("#play4"),
-          pauseCircle: containerMobile.querySelector(
-            "#mobileBtn5 #cerchio5 path:first-child"
-          ),
-          pauseIcons: containerMobile.querySelectorAll("#pausa5 path"),
-        },
+    // Desktop buttons
+    if (container) {
+      const desktop = {
+        samplePlay: container.querySelector("#CERCHIO1 path:first-child"),
+        samplePause: container.querySelector("#CERCHIO2 path:first-child"),
+        beatPlay: container.querySelector("#CERCHIO3 path:first-child"),
+        beatPause: container.querySelector("#CERCHIO4 path:first-child"),
+        borders: [
+          container.querySelector("#CERCHIO1 path:nth-child(2)"),
+          container.querySelector("#CERCHIO2 path:nth-child(2)"),
+          container.querySelector("#CERCHIO3 path:nth-child(2)"),
+          container.querySelector("#CERCHIO4 path:nth-child(2)"),
+        ],
       };
 
-      const orange = "#fa5004",
-        white = "#ffffff";
+      applyState(desktop, {
+        borders: [white, white, white, white],
+        samplePlay: isSamplePlaying ? orange : white,
+        samplePause: isSamplePlaying ? white : orange,
+        beatPlay: isBeatPlaying ? orange : white,
+        beatPause: isBeatPlaying ? white : orange,
+      });
+    }
 
-      // Sample state
-      if (isSamplePlaying) {
-        setFill(mobile.sample.playCircle, orange);
-        setFill(mobile.sample.playIcon, white);
-        setFill(mobile.sample.playCircleBorder, white);
-        setFill(mobile.sample.pauseCircle, white);
-        setFillMultiple([...mobile.sample.pauseIcons], orange);
-      } else {
-        setFill(mobile.sample.playCircle, white);
-        setFill(mobile.sample.playIcon, orange);
-        setFill(mobile.sample.playCircleBorder, orange);
-        setFill(mobile.sample.pauseCircle, orange);
-        setFillMultiple([...mobile.sample.pauseIcons], white);
-      }
+    // Mobile buttons
+    if (containerMobile) {
+      const mobile = {
+        samplePlayCircle: containerMobile.querySelector(
+          "#mobileBtn2 #cerchio2 path:first-child"
+        ),
+        samplePlayBorder: containerMobile.querySelector(
+          "#mobileBtn2 #cerchio2 path:nth-child(2)"
+        ),
+        samplePlayIcon: containerMobile.querySelector("#play2"),
+        samplePauseCircle: containerMobile.querySelector(
+          "#mobileBtn3 #cerchio3 path:first-child"
+        ),
+        samplePauseBorder: containerMobile.querySelector(
+          "#mobileBtn3 #cerchio3 path:nth-child(2)"
+        ),
+        samplePauseIcons: [...containerMobile.querySelectorAll("#pausa3 path")],
+        beatPlayCircle: containerMobile.querySelector(
+          "#mobileBtn4 #cerchio4 path:first-child"
+        ),
+        beatPlayBorder: containerMobile.querySelector(
+          "#mobileBtn4 #cerchio4 path:nth-child(2)"
+        ),
+        beatPlayIcon: containerMobile.querySelector("#play4"),
+        beatPauseCircle: containerMobile.querySelector(
+          "#mobileBtn5 #cerchio5 path:first-child"
+        ),
+        beatPauseBorder: containerMobile.querySelector(
+          "#mobileBtn5 #cerchio5 path:nth-child(2)"
+        ),
+        beatPauseIcons: [...containerMobile.querySelectorAll("#pausa5 path")],
+      };
 
-      // Beat state
-      if (isBeatPlaying) {
-        setFill(mobile.beat.playCircle, orange);
-        setFill(mobile.beat.playIcon, white);
-        setFill(mobile.beat.playCircleBorder, white);
-        setFill(mobile.beat.pauseCircle, white);
-        setFillMultiple([...mobile.beat.pauseIcons], orange);
-      } else {
-        setFill(mobile.beat.playCircle, white);
-        setFill(mobile.beat.playIcon, orange);
-        setFill(mobile.beat.playCircleBorder, orange);
-        setFill(mobile.beat.pauseCircle, orange);
-        setFillMultiple([...mobile.beat.pauseIcons], white);
-      }
+      applyState(mobile, {
+        // Sample controls
+        samplePlayCircle: isSamplePlaying ? orange : white,
+        samplePlayBorder: isSamplePlaying ? white : orange,
+        samplePlayIcon: isSamplePlaying ? white : orange,
+        samplePauseCircle: isSamplePlaying ? white : orange,
+        samplePauseBorder: !isBeatPlaying
+          ? white
+          : isSamplePlaying
+          ? orange
+          : orange,
+        samplePauseIcons: isSamplePlaying ? orange : white,
+
+        // Beat controls
+        beatPlayCircle: isBeatPlaying ? orange : white,
+        beatPlayBorder: isBeatPlaying ? white : orange,
+        beatPlayIcon: isBeatPlaying ? white : orange,
+        beatPauseCircle: isBeatPlaying ? white : orange,
+        beatPauseBorder: !isSamplePlaying
+          ? white
+          : isBeatPlaying
+          ? orange
+          : orange,
+        beatPauseIcons: isBeatPlaying ? orange : white,
+      });
     }
   }
 
