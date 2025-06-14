@@ -1,9 +1,12 @@
 <!-- BOTTONI CONSOLE -->
 <script>
-  let audioSample = null;
-  let audioBeat = null;
-  let isSamplePlaying = false;
-  let isBeatPlaying = false;
+  //https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
+  const audioContext = new AudioContext();
+  const analyser = audioContext.createAnalyser();
+  analyser.connect(audioContext.destination);
+  analyser.fftSize = 512;
+  const frequencyBinCount = analyser.frequencyBinCount;
+
   const cmsPageNames = [
     "natura",
     "ping-pong",
@@ -17,10 +20,127 @@
     "calendario",
   ];
 
-  const MP3_SAMPLE =
-    "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main/natura-campione.mp3";
-  const MP3_BEAT =
-    "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main/natura-beat.mp3";
+  function getCurrentSlug() {
+    const currentSlug = window.location.pathname.split("/").pop();
+    return currentSlug || cmsPageNames[0];
+  }
+
+  function generateAudioUrls(slug) {
+    const baseUrl =
+      "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main";
+    return {
+      sample: `${baseUrl}/${slug}-campione.mp3`,
+      beat: `${baseUrl}/${slug}-beat.mp3`,
+    };
+  }
+
+  const { sample, beat } = generateAudioUrls(getCurrentSlug());
+
+  // Unified audio management
+  class AudioManager {
+    constructor() {
+      this.tracks = {
+        sample: { url: sample, audio: null, source: null, playing: false },
+        beat: { url: beat, audio: null, source: null, playing: false },
+      };
+    }
+
+    async ensureAudioContextStarted() {
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+        console.log("AudioContext resumed");
+      }
+    }
+
+    initTrack(trackName) {
+      const track = this.tracks[trackName];
+
+      if (!track.audio) {
+        track.audio = new Audio(track.url);
+        track.audio.loop = true;
+        track.audio.crossOrigin = "anonymous";
+
+        track.source = audioContext.createMediaElementSource(track.audio);
+        track.source.connect(analyser);
+
+        track.audio.addEventListener("loadstart", () =>
+          console.log(`Audio ${trackName}: Loading started`)
+        );
+        track.audio.addEventListener("canplay", () =>
+          console.log(`Audio ${trackName}: Ready to play`)
+        );
+        track.audio.addEventListener("error", (e) =>
+          console.error(`${trackName} audio error:`, e)
+        );
+        track.audio.addEventListener("ended", () => {
+          track.playing = false;
+          updateVisualState();
+        });
+      }
+    }
+
+    async play(trackName) {
+      await this.ensureAudioContextStarted();
+
+      // Stop other tracks
+      Object.keys(this.tracks).forEach((name) => {
+        if (name !== trackName && this.tracks[name].playing) {
+          this.pause(name);
+        }
+      });
+
+      this.initTrack(trackName);
+      const track = this.tracks[trackName];
+
+      if (track.audio && !track.playing) {
+        try {
+          await track.audio.play();
+          track.playing = true;
+          updateVisualState();
+          console.log(`Audio ${trackName}: Playing`);
+        } catch (error) {
+          console.error(`${trackName} playback error:`, error);
+        }
+      }
+    }
+
+    pause(trackName) {
+      const track = this.tracks[trackName];
+
+      if (track.audio && track.playing) {
+        track.audio.pause();
+        track.playing = false;
+        updateVisualState();
+        console.log(`Audio ${trackName}: Paused`);
+      }
+    }
+
+    isPlaying(trackName) {
+      return this.tracks[trackName].playing;
+    }
+
+    isAnyPlaying() {
+      return Object.values(this.tracks).some((track) => track.playing);
+    }
+
+    preloadAll() {
+      Object.keys(this.tracks).forEach((trackName) => {
+        this.initTrack(trackName);
+      });
+    }
+  }
+
+  const audioManager = new AudioManager();
+
+  // Simplified play/pause functions
+  const playSample = () => audioManager.play("sample");
+  const pauseSample = () => audioManager.pause("sample");
+  const playBeat = () => audioManager.play("beat");
+  const pauseBeat = () => audioManager.pause("beat");
+
+  // Get playing states
+  const isSamplePlaying = () => audioManager.isPlaying("sample");
+  const isBeatPlaying = () => audioManager.isPlaying("beat");
 
   // SVGs bottoni
   const svgMarkup = `
@@ -307,112 +427,6 @@
           </svg>
   `;
 
-  // sample
-  function initAudioSample() {
-    if (!audioSample) {
-      audioSample = new Audio(MP3_SAMPLE);
-      audioSample.loop = true;
-
-      audioSample.addEventListener("loadstart", () =>
-        console.log("Audio Sample: Loading started")
-      );
-      audioSample.addEventListener("canplay", () =>
-        console.log("Audio Sample: Ready to play")
-      );
-      audioSample.addEventListener("error", (e) =>
-        console.error("Sample audio error:", e)
-      );
-      audioSample.addEventListener("ended", () => {
-        isSamplePlaying = false;
-        updateVisualState();
-      });
-    }
-  }
-
-  function playSample() {
-    // pausa l'audio beat se sta suonando
-    if (audioBeat && isBeatPlaying) {
-      pauseBeat();
-    }
-
-    initAudioSample();
-
-    if (audioSample && !isSamplePlaying) {
-      audioSample
-        .play()
-        .then(() => {
-          isSamplePlaying = true;
-          updateVisualState();
-          console.log("Audio Sample: Playing");
-        })
-        .catch((error) => {
-          console.error("Sample playback error:", error);
-        });
-    }
-  }
-
-  function pauseSample() {
-    if (audioSample && isSamplePlaying) {
-      audioSample.pause();
-      isSamplePlaying = false;
-      updateVisualState();
-      console.log("Audio Sample: Paused");
-    }
-  }
-
-  // Beat audio functions
-  function initAudioBeat() {
-    if (!audioBeat) {
-      audioBeat = new Audio(MP3_BEAT);
-      audioBeat.loop = true;
-
-      audioBeat.addEventListener("loadstart", () =>
-        console.log("Audio Beat: Loading started")
-      );
-      audioBeat.addEventListener("canplay", () =>
-        console.log("Audio Beat: Ready to play")
-      );
-      audioBeat.addEventListener("error", (e) =>
-        console.error("Beat audio error:", e)
-      );
-      audioBeat.addEventListener("ended", () => {
-        isBeatPlaying = false;
-        updateVisualState();
-      });
-    }
-  }
-
-  function playBeat() {
-    // pausa l'audio sample se sta suonando
-    if (audioSample && isSamplePlaying) {
-      pauseSample();
-    }
-
-    initAudioBeat();
-
-    if (audioBeat && !isBeatPlaying) {
-      audioBeat
-        .play()
-        .then(() => {
-          isBeatPlaying = true;
-          updateVisualState();
-          console.log("Audio Beat: Playing");
-        })
-        .catch((error) => {
-          console.error("Beat playback error:", error);
-        });
-    }
-  }
-
-  function pauseBeat() {
-    if (audioBeat && isBeatPlaying) {
-      audioBeat.pause();
-      isBeatPlaying = false;
-      updateVisualState();
-      console.log("Audio Beat: Paused");
-    }
-  }
-
   // cambio style a interazione desktop
   function updateVisualState() {
     const container = document.querySelector("#console-btns");
@@ -455,10 +469,10 @@
 
       applyState(desktop, {
         borders: white,
-        samplePlay: isSamplePlaying ? orange : white,
-        samplePause: isSamplePlaying ? white : orange,
-        beatPlay: isBeatPlaying ? orange : white,
-        beatPause: isBeatPlaying ? white : orange,
+        samplePlay: isSamplePlaying() ? orange : white,
+        samplePause: isSamplePlaying() ? white : orange,
+        beatPlay: isBeatPlaying() ? orange : white,
+        beatPause: isBeatPlaying() ? white : orange,
       });
     }
 
@@ -499,14 +513,14 @@
 
       applyState(mobile, {
         borders: white,
-        samplePlayCircle: isSamplePlaying ? orange : white,
-        samplePlayIcon: isSamplePlaying ? white : orange,
-        samplePauseCircle: isSamplePlaying ? white : orange,
-        samplePauseIcons: isSamplePlaying ? orange : white,
-        beatPlayCircle: isBeatPlaying ? orange : white,
-        beatPlayIcon: isBeatPlaying ? white : orange,
-        beatPauseCircle: isBeatPlaying ? white : orange,
-        beatPauseIcons: isBeatPlaying ? orange : white,
+        samplePlayCircle: isSamplePlaying() ? orange : white,
+        samplePlayIcon: isSamplePlaying() ? white : orange,
+        samplePauseCircle: isSamplePlaying() ? white : orange,
+        samplePauseIcons: isSamplePlaying() ? orange : white,
+        beatPlayCircle: isBeatPlaying() ? orange : white,
+        beatPlayIcon: isBeatPlaying() ? white : orange,
+        beatPauseCircle: isBeatPlaying() ? white : orange,
+        beatPauseIcons: isBeatPlaying() ? orange : white,
       });
     }
   }
@@ -551,12 +565,6 @@
     }
 
     updateVisualState();
-
-    // Preload audio after 1 second
-    setTimeout(() => {
-      initAudioSample();
-      initAudioBeat();
-    }, 1000);
 
     console.log("Audio Player initialized");
   }
@@ -744,57 +752,61 @@
     initAudioPlayer();
   }
 
-  // Export API
-  window.audioPlayer = {
-    playSample: playSample,
-    pauseSample: pauseSample,
-    playBeat: playBeat,
-    pauseBeat: pauseBeat,
-    isSamplePlaying: () => isSamplePlaying,
-    isBeatPlaying: () => isBeatPlaying,
-    init: initAudioPlayer,
-  };
-</script>
+  class WaveformVisualizer {
+    // Configuration constants
+    static CONFIG = {
+      BAR_COUNT: 90,
+      BASE_VIEWPORT: { width: 1512, height: 982 },
+      INITIAL_WAVE: { duration: 1000, delay: 200 },
+      ANIMATION: {
+        acceleration: 0.12,
+        damping: 0.7,
+        timeIncrement: 0.015,
+        barOffset: 0.15,
+        chaosRange: 0.6,
+        maxHeightProbability: 0.04,
+        heightMultiplier: 0.7,
+      },
+      RESIZE_DEBOUNCE: 150,
+    };
 
-<!-- SOUND WAVE -->
-<script>
-  function initWaveform() {
-    const container = document.getElementById("waveform-container");
+    constructor(containerId) {
+      this.container = document.getElementById(containerId);
+      if (!this.container) {
+        throw new Error(`Element with id '${containerId}' not found`);
+      }
 
-    if (!container) {
-      console.error("Element with id 'waveform-container' not found");
-      return;
+      this.svg = null;
+      this.bars = [];
+      this.barData = [];
+      this.animationId = null;
+      this.time = 0;
+      this.resizeTimeout = null;
+
+      this.frequencies = new Uint8Array(frequencyBinCount);
+
+      // Initial wave animation state
+      this.initialWave = {
+        active: false,
+        startTime: 0,
+      };
+
+      this.init();
     }
 
-    const BAR_COUNT = 90;
-    // basato sui valori di Figma (MacBook Pro 14)
-    const BASE_VIEWPORT_WIDTH = 1512;
-    const BASE_VIEWPORT_HEIGHT = 982;
+    init() {
+      this.createWaveform();
+      this.startAnimation();
+      this.scheduleInitialWave();
+      this.bindEvents();
+    }
 
-    let svg,
-      bars = [],
-      animationId,
-      time = 0;
-    //  array di 90 elementi (BAR_COUNT) con i dati delle "barre"
-    let barData = new Array(BAR_COUNT).fill(0).map(() => ({
-      current: 0,
-      target: 0,
-      velocity: 0,
-    }));
+    getResponsiveDimensions() {
+      const { innerWidth: vw, innerHeight: vh } = window;
+      const { width: baseW, height: baseH } =
+        WaveformVisualizer.CONFIG.BASE_VIEWPORT;
 
-    // variabili animazione al load
-    let initialWaveActive = false;
-    let initialWaveStartTime = 0;
-    const INITIAL_WAVE_DURATION = 1000; // ms
-    const INITIAL_WAVE_DELAY = 200; // ms
-
-    function getResponsiveDimensions() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-
-      const scaleW = vw / BASE_VIEWPORT_WIDTH;
-      const scaleH = vh / BASE_VIEWPORT_HEIGHT;
-      const scale = Math.min(scaleW, scaleH);
+      const scale = Math.min(vw / baseW, vh / baseH);
 
       return {
         barWidth: Math.max(2, Math.round(4 * scale)),
@@ -804,84 +816,101 @@
       };
     }
 
-    function createWaveform() {
-      const dims = getResponsiveDimensions();
+    createWaveform() {
+      const dims = this.getResponsiveDimensions();
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+
+      this.container.innerHTML = "";
+      this.createSVG(dims);
+      this.createBars(dims);
+      this.initializeBarData(dims);
+    }
+
+    createSVG(dims) {
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
       const totalWidth =
         BAR_COUNT * dims.barWidth + (BAR_COUNT - 1) * dims.barSpacing;
+
+      this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+      this.svg.setAttribute("width", totalWidth);
+      this.svg.setAttribute("height", dims.maxHeight);
+      this.svg.style.cssText = "display: block; margin: 0 auto;";
+
+      this.container.appendChild(this.svg);
+    }
+
+    createBars(dims) {
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
       const centerY = dims.maxHeight / 2;
 
-      // mi assicuro che il container della wave sia vuoto
-      container.innerHTML = "";
-
-      // SVG
-      svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("width", totalWidth);
-      svg.setAttribute("height", dims.maxHeight);
-      svg.style.display = "block";
-      // centra svg:
-      svg.style.margin = "0 auto";
-
-      // rettangoli
-      bars = [];
-      for (let i = 0; i < BAR_COUNT; i++) {
+      this.bars = Array.from({ length: BAR_COUNT }, (_, i) => {
         const rect = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "rect"
         );
-        // X = indice × (larghezza + spaziatura)
-        rect.setAttribute("x", i * (dims.barWidth + dims.barSpacing));
+        const x = i * (dims.barWidth + dims.barSpacing);
+
+        rect.setAttribute("x", x);
         rect.setAttribute("width", dims.barWidth);
         rect.setAttribute("height", dims.minHeight);
-        // y centrata verticalmente
         rect.setAttribute("y", centerY - dims.minHeight / 2);
         rect.setAttribute("fill", "white");
         rect.setAttribute("stroke", "none");
 
-        svg.appendChild(rect);
-        bars.push(rect);
-      }
-      // aggiungo svg al container .waveform-container
-      container.appendChild(svg);
+        this.svg.appendChild(rect);
+        return rect;
+      });
+    }
 
-      // Reset bar data for new dimensions
-      barData = new Array(BAR_COUNT).fill(0).map(() => ({
+    initializeBarData(dims) {
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+      this.barData = Array.from({ length: BAR_COUNT }, () => ({
         current: dims.minHeight,
         target: dims.minHeight,
         velocity: 0,
       }));
-
-      return dims;
     }
 
-    function generateInitialWaveHeights(dims, elapsed) {
-      // converte il tempo trascorso in progresso (0-1)
-      const progress = elapsed / INITIAL_WAVE_DURATION; // 0 to 1
-      // fattore di velocità onda (DA REGOLARE)
+    generateTargetHeights(dims) {
+      if (this.initialWave.active) {
+        return this.generateInitialWaveHeights(dims);
+      }
+
+      const isPlaying = isSamplePlaying() || isBeatPlaying();
+
+      if (!isPlaying) {
+        return this.barData.map(() => dims.minHeight);
+      }
+
+      return this.generateActiveWaveHeights(dims);
+    }
+
+    generateInitialWaveHeights(dims) {
+      const { duration } = WaveformVisualizer.CONFIG.INITIAL_WAVE;
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+
+      const elapsed = Date.now() - this.initialWave.startTime;
+
+      if (elapsed >= duration) {
+        this.initialWave.active = false;
+        return this.barData.map(() => dims.minHeight);
+      }
+
+      const progress = elapsed / duration;
       const waveSpeed = 1.2;
+      const animationDuration = 0.2;
 
-      // mappo ogni barra per calcolare ogni h durante l'animazione
-      return barData.map((_, i) => {
-        // t in cui questa barra dovrebbe attivarsi (normalizzato 0-1) / fattore di v onda
-        // waveSpeed = 1.2:
-        // Barra 0: 0 /90  / 1.2 = 0.000
-        // Barra 10:  10 /90  / 1.2  = 0.093 etc.
-        // Barra 89 / 90 / 1.2 = 0.824
+      return this.barData.map((_, i) => {
         const barActivationTime = i / BAR_COUNT / waveSpeed;
-
-        // t animazione x singola barra (20% del tempo totale) (DA REGOLARE)
-        const barAnimationDuration = 0.2;
         const barTime = progress - barActivationTime;
 
-        // se barra non è attivata o l'animazione finita
-        if (barTime < 0 || barTime > barAnimationDuration) {
-          return dims.minHeight; // altezza default
+        if (barTime < 0 || barTime > animationDuration) {
+          return dims.minHeight;
         }
-        // Progresso (0 to 1)
-        const barProgress = barTime / barAnimationDuration;
-        // sin per movimento fluido
-        const amplitude = Math.sin(barProgress * Math.PI);
 
-        // Incremento (DA REGOLARE ora 10px)
+        const barProgress = barTime / animationDuration;
+        const amplitude = Math.sin(barProgress * Math.PI);
         const heightIncrease = Math.max(
           3,
           Math.round(10 * Math.min(1, dims.minHeight / 4))
@@ -891,125 +920,113 @@
       });
     }
 
-    function generateTargetHeights(dims) {
-      // Se l'animazione iniziale è attiva
-      if (initialWaveActive) {
-        // calcolo il tempo trascorso
-        const elapsed = Date.now() - initialWaveStartTime;
-        if (elapsed < INITIAL_WAVE_DURATION) {
-          return generateInitialWaveHeights(dims, elapsed);
-        } else {
-          // termine == tutte le barre tornano a minHeight
-          initialWaveActive = false;
-          return barData.map(() => dims.minHeight);
-        }
-      }
+    generateActiveWaveHeights(dims) {
+      const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+      const {
+        maxHeightProbability,
+        timeIncrement,
+        barOffset,
+        chaosRange,
+        heightMultiplier,
+      } = WaveformVisualizer.CONFIG.ANIMATION;
 
-      const isPlaying =
-        window.audioPlayer?.isSamplePlaying?.() ||
-        window.audioPlayer?.isBeatPlaying?.();
+      analyser.getByteFrequencyData(this.frequencies);
 
-      // se non suona --> minheight != 0
-      if (!isPlaying) {
-        return barData.map(() => dims.minHeight);
-      }
-
-      // gestione della wave irregolare
-      return barData.map((_, i) => {
-        // 4% di probabilità di essere a maxHeight
-        if (Math.random() < 0.04) {
-          return dims.maxHeight;
-        }
-        const randomFactor = Math.random();
-        // Onda sinusoidale irregolare con rumore
-        const irregularWave =
-          Math.sin(time * 0.015 + i * 0.15 + Math.random() * 1.5) *
-          randomFactor;
-        //  caos extra (±0.3)
-
-        const chaos = (Math.random() - 0.5) * 0.6;
-        const combined = Math.abs(irregularWave + chaos);
-
-        return (
-          // altezza finale (70% max range)
-          dims.minHeight + combined * (dims.maxHeight - dims.minHeight) * 0.7
-        );
+      return this.barData.map((_, i) => {
+        const barIndex = i < BAR_COUNT / 2 ? i : BAR_COUNT - i;
+        const sampleSize = Math.floor(frequencyBinCount / (BAR_COUNT / 2));
+        const amplitude =
+          this.frequencies
+            .slice(barIndex * sampleSize, barIndex * sampleSize + sampleSize)
+            .reduce((a, b) => a + b) / sampleSize;
+        return Math.max(dims.minHeight, (amplitude / 255) * dims.maxHeight);
       });
     }
 
-    function updateBars() {
-      const dims = getResponsiveDimensions();
-      const targets = generateTargetHeights(dims);
+    updateBars() {
+      const dims = this.getResponsiveDimensions();
+      const targets = this.generateTargetHeights(dims);
       const centerY = dims.maxHeight / 2;
+      const { acceleration, damping } = WaveformVisualizer.CONFIG.ANIMATION;
 
-      bars.forEach((bar, i) => {
-        const data = barData[i];
-        // applica "physics-based animation"
-        // le barre si muovono verso il target con accelerazione
-        //  velocità diminuisce gradualmente (0.82 = perde 18% velocità ogni frame)
+      this.bars.forEach((bar, i) => {
+        const data = this.barData[i];
+
         data.target = targets[i];
-        data.velocity += (data.target - data.current) * 0.12;
-        // fattore di smorzamento (damping)
-        data.velocity *= 0.7;
+        data.velocity += (data.target - data.current) * acceleration;
+        data.velocity *= damping;
         data.current += data.velocity;
 
-        // minimo e massimo
         data.current = Math.max(
           dims.minHeight,
           Math.min(dims.maxHeight, data.current)
         );
 
-        //crescono simmetriche dal centro
         const height = Math.round(data.current);
         bar.setAttribute("height", height);
         bar.setAttribute("y", centerY - height / 2);
       });
 
-      time++;
-      animationId = requestAnimationFrame(updateBars);
+      this.time++;
+      this.animationId = requestAnimationFrame(() => this.updateBars());
     }
-    // GESTIONE INIZIO ANIMAZIONE dopo 200ms
-    function startInitialWave() {
+
+    startAnimation() {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
+      }
+      this.updateBars();
+    }
+
+    scheduleInitialWave() {
+      const { delay } = WaveformVisualizer.CONFIG.INITIAL_WAVE;
       setTimeout(() => {
-        initialWaveActive = true;
-        initialWaveStartTime = Date.now();
-      }, INITIAL_WAVE_DELAY);
+        this.initialWave.active = true;
+        this.initialWave.startTime = Date.now();
+      }, delay);
     }
 
-    function handleResize() {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+    handleResize() {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
       }
-      createWaveform();
-      updateBars();
+      this.createWaveform();
+      this.startAnimation();
     }
 
-    // PROBLEMA HANDLER RESIZE:
-    //  se ridimensiona la finestra del browser --> evento resize si scatena centinaia di volte:
-    //  --> 1 sola chiamata a handleResize() (150ms dopo che l'utente ha finito)
-    let resizeTimeout;
-    function debouncedResize() {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(handleResize, 150);
+    debouncedResize() {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(
+        () => this.handleResize(),
+        WaveformVisualizer.CONFIG.RESIZE_DEBOUNCE
+      );
     }
 
-    createWaveform();
-    updateBars();
-    startInitialWave();
+    bindEvents() {
+      this.boundResize = () => this.debouncedResize();
+      window.addEventListener("resize", this.boundResize);
+    }
 
-    window.addEventListener("resize", debouncedResize);
-
-    // pulizia al termine
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
+    destroy() {
+      if (this.animationId) {
+        cancelAnimationFrame(this.animationId);
       }
-      window.removeEventListener("resize", debouncedResize);
-      clearTimeout(resizeTimeout);
-    };
+      window.removeEventListener("resize", this.boundResize);
+      clearTimeout(this.resizeTimeout);
+      this.container.innerHTML = "";
+    }
   }
 
-  // initialize quando DOM pronto
+  // Initialize when DOM is ready
+  function initWaveform() {
+    try {
+      return new WaveformVisualizer("waveform-container");
+    } catch (error) {
+      console.error("Failed to initialize waveform:", error);
+      return null;
+    }
+  }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initWaveform);
   } else {
