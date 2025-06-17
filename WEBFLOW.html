@@ -172,9 +172,19 @@
     if (container) {
       const desktop = {
         samplePlay: container.querySelector("#CERCHIO1 path:first-child"),
+        samplePlayIc: Array.from(container.querySelectorAll("#PLAY1 > path")),
         samplePause: container.querySelector("#CERCHIO2 path:first-child"),
+        samplePauseIc: Array.from(
+          container.querySelectorAll("#PAUSA2 > g > path")
+        ),
+
         beatPlay: container.querySelector("#CERCHIO3 path:first-child"),
+        beatPlayIc: Array.from(container.querySelectorAll("#PLAY3 > path")),
         beatPause: container.querySelector("#CERCHIO4 path:first-child"),
+        beatPauseIc: Array.from(
+          container.querySelectorAll("#PAUSA4 > g > path")
+        ),
+
         borders: [
           container.querySelector("#CERCHIO1 path:nth-child(2)"),
           container.querySelector("#CERCHIO2 path:nth-child(2)"),
@@ -186,9 +196,13 @@
       applyState(desktop, {
         borders: white,
         samplePlay: isSamplePlaying() ? orange : white,
+        samplePlayIc: isSamplePlaying() ? white : orange,
         samplePause: isSamplePlaying() ? white : orange,
+        samplePauseIc: isSamplePlaying() ? orange : white,
         beatPlay: isBeatPlaying() ? orange : white,
+        beatPlayIc: isBeatPlaying() ? white : orange,
         beatPause: isBeatPlaying() ? white : orange,
+        beatPauseIc: isBeatPlaying() ? orange : white,
       });
     }
 
@@ -461,6 +475,7 @@
     }
   }
 
+  // ------------ SOUND WAVE ------------
   // Auto-initialize or provide manual init
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAudioPlayer);
@@ -473,7 +488,7 @@
     static CONFIG = {
       BAR_COUNT: 90, // Va bene tutto purche' sia minore di frequencyBinCount * 2
       BASE_VIEWPORT: { width: 1512, height: 982 },
-      INITIAL_WAVE: { duration: 1000, delay: 200 },
+      INITIAL_WAVE: { duration: 1000, delay: 500 },
       ANIMATION: {
         acceleration: 0.12,
         damping: 0.7,
@@ -774,11 +789,11 @@
     </g>
     <g id="PAUSA2">
       <g>
-        <path class="cls-3 cursor-hover" d="M259.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M259.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
         <path class="cls-1 cursor-hover" d="M259.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M259.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
       </g>
       <g>
-        <path class="cls-3 cursor-hover" d="M266.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M266.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
         <path class="cls-1 cursor-hover" d="M266.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M266.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
       </g>
     </g>
@@ -802,11 +817,11 @@
     </g>
     <g id="PAUSA4">
       <g>
-        <path class="cls-3 cursor-hover" d="M405.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M405.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
         <path class="cls-1 cursor-hover" d="M405.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M405.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
       </g>
       <g>
-        <path class="cls-3 cursor-hover" d="M412.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M412.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
         <path class="cls-1 cursor-hover" d="M412.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M412.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
       </g>
     </g>

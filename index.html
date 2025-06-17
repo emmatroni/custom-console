@@ -5,16 +5,882 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="console.css" />
-    <script src="consoleMobile.js" defer></script>
   </head>
   <body>
     <div class="bassodettaglio">
       <div class="consoleContainer">
         <div class="console">
-          <!-- bottoni -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 147">
-            <defs></defs>
-            <g id="bottone1Mobile">
+          <!-- BOTTONI CONSOLE -->
+          <script>
+            //https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
+            const audioContext = new AudioContext();
+            const analyser = audioContext.createAnalyser();
+
+            // Fast Fourier Transform (https://it.wikipedia.org/wiki/Trasformata_di_Fourier_veloce)
+            analyser.fftSize = 512;
+
+            // Questo sara' sempre fftSize / 2, ed e' il numero di barre per ogni frequenza dell'audio analizzato.
+            const frequencyBinCount = analyser.frequencyBinCount;
+
+            analyser.connect(audioContext.destination);
+
+            const cmsPageNames = [
+              "natura",
+              "ping-pong",
+              "occhiali",
+              "passaporto",
+              "cucina",
+              "liquore",
+              "spartito",
+              "pianola",
+              "vinile",
+              "calendario",
+            ];
+
+            function getCurrentSlug() {
+              const currentSlug = window.location.pathname.split("/").pop();
+              return currentSlug || cmsPageNames[0];
+            }
+
+            function generateAudioUrls(slug) {
+              const baseUrl =
+                "https://raw.githubusercontent.com/emmatroni/assets-audio-plastify/main";
+              return {
+                sample: `${baseUrl}/${slug}-campione.mp3`,
+                beat: `${baseUrl}/${slug}-beat.mp3`,
+              };
+            }
+
+            // Unified audio management
+            class AudioManager {
+              constructor() {
+                const { sample, beat } = generateAudioUrls(getCurrentSlug());
+                this.tracks = {
+                  sample: {
+                    url: sample,
+                    audio: null,
+                    source: null,
+                    playing: false,
+                  },
+                  beat: {
+                    url: beat,
+                    audio: null,
+                    source: null,
+                    playing: false,
+                  },
+                };
+              }
+
+              async ensureAudioContextStarted() {
+                if (audioContext.state === "suspended") {
+                  await audioContext.resume();
+                  console.log("AudioContext resumed");
+                }
+              }
+
+              initTrack(trackName) {
+                const track = this.tracks[trackName];
+
+                if (!track.audio) {
+                  track.audio = new Audio(track.url);
+                  track.audio.loop = true;
+                  track.audio.crossOrigin = "anonymous";
+
+                  track.source = audioContext.createMediaElementSource(
+                    track.audio
+                  );
+                  track.source.connect(analyser);
+
+                  track.audio.addEventListener("loadstart", () =>
+                    console.log(`Audio ${trackName}: Loading started`)
+                  );
+                  track.audio.addEventListener("canplay", () =>
+                    console.log(`Audio ${trackName}: Ready to play`)
+                  );
+                  track.audio.addEventListener("error", (e) =>
+                    console.error(`${trackName} audio error:`, e)
+                  );
+                  track.audio.addEventListener("ended", () => {
+                    track.playing = false;
+                    updateVisualState();
+                  });
+                }
+              }
+
+              async play(trackName) {
+                await this.ensureAudioContextStarted();
+
+                // Stop other tracks
+                Object.keys(this.tracks).forEach((name) => {
+                  if (name !== trackName && this.tracks[name].playing) {
+                    this.pause(name);
+                  }
+                });
+
+                this.initTrack(trackName);
+                const track = this.tracks[trackName];
+
+                if (track.audio && !track.playing) {
+                  try {
+                    await track.audio.play();
+                    track.playing = true;
+                    updateVisualState();
+                    console.log(`Audio ${trackName}: Playing`);
+                  } catch (error) {
+                    console.error(`${trackName} playback error:`, error);
+                  }
+                }
+              }
+
+              pause(trackName) {
+                const track = this.tracks[trackName];
+
+                if (track.audio && track.playing) {
+                  track.audio.pause();
+                  track.playing = false;
+                  updateVisualState();
+                  console.log(`Audio ${trackName}: Paused`);
+                }
+              }
+
+              isPlaying(trackName) {
+                return this.tracks[trackName].playing;
+              }
+
+              preloadAll() {
+                Object.keys(this.tracks).forEach((trackName) => {
+                  this.initTrack(trackName);
+                });
+              }
+            }
+
+            const audioManager = new AudioManager();
+            audioManager.preloadAll();
+
+            // Simplified play/pause functions
+            const playSample = () => audioManager.play("sample");
+            const pauseSample = () => audioManager.pause("sample");
+            const playBeat = () => audioManager.play("beat");
+            const pauseBeat = () => audioManager.pause("beat");
+
+            // Get playing states
+            const isSamplePlaying = () => audioManager.isPlaying("sample");
+            const isBeatPlaying = () => audioManager.isPlaying("beat");
+
+            // cambio style a interazione desktop
+            function updateVisualState() {
+              const container = document.querySelector("#console-btns");
+              const containerMobile =
+                document.querySelector("#mobileConsoleBtns");
+              const orange = "#fa5004",
+                white = "#ffffff";
+
+              function setFill(element, color) {
+                if (element) element.style.fill = color;
+              }
+
+              function setFillAll(elements, color) {
+                elements.forEach((el) => setFill(el, color));
+              }
+
+              function applyState(elements, states) {
+                Object.entries(states).forEach(([key, color]) => {
+                  if (Array.isArray(elements[key])) {
+                    setFillAll(elements[key], color);
+                  } else {
+                    setFill(elements[key], color);
+                  }
+                });
+              }
+
+              // Desktop buttons
+              if (container) {
+                const desktop = {
+                  samplePlay: container.querySelector(
+                    "#CERCHIO1 path:first-child"
+                  ),
+                  samplePause: container.querySelector(
+                    "#CERCHIO2 path:first-child"
+                  ),
+                  beatPlay: container.querySelector(
+                    "#CERCHIO3 path:first-child"
+                  ),
+                  beatPause: container.querySelector(
+                    "#CERCHIO4 path:first-child"
+                  ),
+                  borders: [
+                    container.querySelector("#CERCHIO1 path:nth-child(2)"),
+                    container.querySelector("#CERCHIO2 path:nth-child(2)"),
+                    container.querySelector("#CERCHIO3 path:nth-child(2)"),
+                    container.querySelector("#CERCHIO4 path:nth-child(2)"),
+                  ],
+                };
+
+                applyState(desktop, {
+                  borders: white,
+                  samplePlay: isSamplePlaying() ? orange : white,
+                  samplePause: isSamplePlaying() ? white : orange,
+                  beatPlay: isBeatPlaying() ? orange : white,
+                  beatPause: isBeatPlaying() ? white : orange,
+                });
+              }
+
+              // Mobile buttons
+              if (containerMobile) {
+                const mobile = {
+                  samplePlayCircle: containerMobile.querySelector(
+                    "#mobileBtn2 #cerchio2 path:first-child"
+                  ),
+                  samplePlayIcon: containerMobile.querySelector("#play2"),
+                  samplePauseCircle: containerMobile.querySelector(
+                    "#mobileBtn3 #cerchio3 path:first-child"
+                  ),
+                  samplePauseIcons: [
+                    ...containerMobile.querySelectorAll("#pausa3 path"),
+                  ],
+                  beatPlayCircle: containerMobile.querySelector(
+                    "#mobileBtn4 #cerchio4 path:first-child"
+                  ),
+                  beatPlayIcon: containerMobile.querySelector("#play4"),
+                  beatPauseCircle: containerMobile.querySelector(
+                    "#mobileBtn5 #cerchio5 path:first-child"
+                  ),
+                  beatPauseIcons: [
+                    ...containerMobile.querySelectorAll("#pausa5 path"),
+                  ],
+                  borders: [
+                    containerMobile.querySelector(
+                      "#mobileBtn2 #cerchio2 path:nth-child(2)"
+                    ),
+                    containerMobile.querySelector(
+                      "#mobileBtn3 #cerchio3 path:nth-child(2)"
+                    ),
+                    containerMobile.querySelector(
+                      "#mobileBtn4 #cerchio4 path:nth-child(2)"
+                    ),
+                    containerMobile.querySelector(
+                      "#mobileBtn5 #cerchio5 path:nth-child(2)"
+                    ),
+                  ],
+                };
+
+                applyState(mobile, {
+                  borders: white,
+                  samplePlayCircle: isSamplePlaying() ? orange : white,
+                  samplePlayIcon: isSamplePlaying() ? white : orange,
+                  samplePauseCircle: isSamplePlaying() ? white : orange,
+                  samplePauseIcons: isSamplePlaying() ? orange : white,
+                  beatPlayCircle: isBeatPlaying() ? orange : white,
+                  beatPlayIcon: isBeatPlaying() ? white : orange,
+                  beatPauseCircle: isBeatPlaying() ? white : orange,
+                  beatPauseIcons: isBeatPlaying() ? orange : white,
+                });
+              }
+            }
+
+            // INTERAZIONE BOTTONI
+            function initAudioPlayer() {
+              // Desktop container
+              const container = document.getElementById("console-btns");
+              // Mobile container
+              const containerMobile =
+                document.getElementById("mobileConsoleBtns");
+
+              // Verifica che almeno uno dei contenitori esista
+              if (!container && !containerMobile) {
+                console.error(
+                  "Neither 'console-btns' nor 'mobile-console-btns' containers found"
+                );
+                return;
+              }
+
+              //  desktop btns
+              if (container) {
+                container.innerHTML = svgMarkup;
+                setupDesktopButtons(container);
+              }
+
+              //  mobile btns
+              if (containerMobile) {
+                containerMobile.innerHTML = svgMobileMarkup;
+
+                // CSS per l'SVG stesso
+                const svg = containerMobile.querySelector("svg");
+                if (svg) {
+                  console.log("SVG found:", svg);
+                  svg.style.display = "block";
+                  svg.style.position = "fixed";
+                  svg.style.bottom = "0";
+                } else {
+                  console.log("SVG not found in container");
+                }
+
+                setupMobileButtons(containerMobile);
+              }
+
+              updateVisualState();
+
+              console.log("Audio Player initialized");
+            }
+
+            function setupDesktopButtons(container) {
+              const bottone1 = container.querySelector("#bottone1");
+              const bottone2 = container.querySelector("#bottone2");
+              const bottone3 = container.querySelector("#bottone3");
+              const bottone4 = container.querySelector("#bottone4");
+
+              if (bottone1) {
+                bottone1.addEventListener("click", () => {
+                  console.log("Play Sample clicked");
+                  playSample();
+                });
+              }
+
+              if (bottone2) {
+                bottone2.addEventListener("click", () => {
+                  console.log("Pause Sample clicked");
+                  pauseSample();
+                });
+              }
+
+              if (bottone3) {
+                bottone3.addEventListener("click", () => {
+                  console.log("Play Beat clicked");
+                  playBeat();
+                });
+              }
+
+              if (bottone4) {
+                bottone4.addEventListener("click", () => {
+                  console.log("Pause Beat clicked");
+                  pauseBeat();
+                });
+              }
+            }
+
+            function navigateToPreviousManual() {
+              // Get current page slug from URL
+              const currentPath = window.location.pathname;
+              const currentSlug = currentPath.split("/").pop();
+
+              // Find current index
+              const currentIndex = cmsPageNames.indexOf(currentSlug);
+
+              if (currentIndex === -1) {
+                console.warn("Current page not found in manual list");
+                // Fallback: vai all'ultimo elemento della lista
+                const lastSlug = cmsPageNames[cmsPageNames.length - 1]; // "calendario"
+                const basePath = currentPath.substring(
+                  0,
+                  currentPath.lastIndexOf("/")
+                );
+                const newUrl = `${window.location.origin}${basePath}/${lastSlug}`;
+                window.location.href = newUrl;
+                return;
+              }
+
+              // Get previous index (wrap to end if at beginning)
+              const previousIndex =
+                currentIndex === 0 ? cmsPageNames.length - 1 : currentIndex - 1;
+              const previousSlug = cmsPageNames[previousIndex];
+
+              // Build new URL
+              const basePath = currentPath.substring(
+                0,
+                currentPath.lastIndexOf("/")
+              );
+              const newUrl = `${window.location.origin}${basePath}/${previousSlug}`;
+
+              // Navigate
+              window.location.href = newUrl;
+            }
+            function navigateToNextManual() {
+              const currentPath = window.location.pathname;
+              const currentSlug = currentPath.split("/").pop();
+
+              // trova index
+              const currentIndex = cmsPageNames.indexOf(currentSlug);
+
+              if (currentIndex === -1) {
+                console.warn("Current page not found in manual list");
+                // Fallback: vai al primo elemento della lista
+                const firstSlug = cmsPageNames[0]; // "natura"
+                const basePath = currentPath.substring(
+                  0,
+                  currentPath.lastIndexOf("/")
+                );
+                const newUrl = `${window.location.origin}${basePath}/${firstSlug}`;
+                window.location.href = newUrl;
+                return;
+              }
+
+              // Get next index (wrap to beginning if at end)
+              const nextIndex = (currentIndex + 1) % cmsPageNames.length;
+              const nextSlug = cmsPageNames[nextIndex];
+
+              // Build new URL
+              const basePath = currentPath.substring(
+                0,
+                currentPath.lastIndexOf("/")
+              );
+              const newUrl = `${window.location.origin}${basePath}/${nextSlug}`;
+
+              // Navigate
+              window.location.href = newUrl;
+            }
+
+            // Update setupMobileButtons function to add mobileBtn6 functionality:
+
+            function setupMobileButtons(containerMobile) {
+              const mobileBtn1 = containerMobile.querySelector("#mobileBtn1");
+              const mobileBtn2 = containerMobile.querySelector("#mobileBtn2");
+              const mobileBtn3 = containerMobile.querySelector("#mobileBtn3");
+              const mobileBtn4 = containerMobile.querySelector("#mobileBtn4");
+              const mobileBtn5 = containerMobile.querySelector("#mobileBtn5");
+              const mobileBtn6 = containerMobile.querySelector("#mobileBtn6");
+
+              // Previous page navigation
+              if (mobileBtn1) {
+                mobileBtn1.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    e.preventDefault();
+                    console.log("Previous page touched");
+                    navigateToPreviousManual();
+                  },
+                  { passive: false }
+                );
+              }
+
+              // Audio controls
+              if (mobileBtn2) {
+                mobileBtn2.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    console.log("Play Sample touched");
+                    playSample();
+                  },
+                  { passive: true }
+                );
+              }
+
+              if (mobileBtn3) {
+                mobileBtn3.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    console.log("Pause Sample touched");
+                    pauseSample();
+                  },
+                  { passive: true }
+                );
+              }
+
+              if (mobileBtn4) {
+                mobileBtn4.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    console.log("Play beat touched");
+                    playBeat();
+                  },
+                  { passive: true }
+                );
+              }
+
+              if (mobileBtn5) {
+                mobileBtn5.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    console.log("Pause beat touched");
+                    pauseBeat();
+                  },
+                  { passive: true }
+                );
+              }
+
+              // Next page navigation
+              if (mobileBtn6) {
+                mobileBtn6.addEventListener(
+                  "touchstart",
+                  (e) => {
+                    e.preventDefault();
+                    console.log("Next page touched");
+                    navigateToNextManual();
+                  },
+                  { passive: false }
+                );
+              }
+            }
+
+            // ------------ SOUND WAVE ------------
+            // Auto-initialize or provide manual init
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", initAudioPlayer);
+            } else {
+              initAudioPlayer();
+            }
+
+            class WaveformVisualizer {
+              // Configuration constants
+              static CONFIG = {
+                BAR_COUNT: 90, // Va bene tutto purche' sia minore di frequencyBinCount * 2
+                BASE_VIEWPORT: { width: 1512, height: 982 },
+                INITIAL_WAVE: { duration: 1000, delay: 500 },
+                ANIMATION: {
+                  acceleration: 0.12,
+                  damping: 0.7,
+                  timeIncrement: 0.015,
+                  barOffset: 0.15,
+                  chaosRange: 0.6,
+                  maxHeightProbability: 0.04,
+                  heightMultiplier: 0.7,
+                },
+                RESIZE_DEBOUNCE: 150,
+              };
+
+              constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                if (!this.container) {
+                  throw new Error(`Element with id '${containerId}' not found`);
+                }
+
+                this.svg = null;
+                this.bars = [];
+                this.barData = [];
+                this.animationId = null;
+                this.time = 0;
+                this.resizeTimeout = null;
+
+                this.frequencies = new Uint8Array(frequencyBinCount);
+
+                // Initial wave animation state
+                this.initialWave = {
+                  active: false,
+                  startTime: 0,
+                };
+
+                this.init();
+              }
+
+              init() {
+                this.createWaveform();
+                this.startAnimation();
+                this.scheduleInitialWave();
+                this.bindEvents();
+              }
+
+              getResponsiveDimensions() {
+                const { innerWidth: vw, innerHeight: vh } = window;
+                const { width: baseW, height: baseH } =
+                  WaveformVisualizer.CONFIG.BASE_VIEWPORT;
+
+                const scale = Math.min(vw / baseW, vh / baseH);
+
+                return {
+                  barWidth: Math.max(2, Math.round(4 * scale)),
+                  barSpacing: Math.max(2, Math.round(5 * scale)),
+                  minHeight: Math.max(2, Math.round(4 * scale)),
+                  maxHeight: Math.max(20, Math.round(145 * scale)),
+                };
+              }
+
+              createWaveform() {
+                const dims = this.getResponsiveDimensions();
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+
+                this.container.innerHTML = "";
+                this.createSVG(dims);
+                this.createBars(dims);
+                this.initializeBarData(dims);
+              }
+
+              createSVG(dims) {
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+                const totalWidth =
+                  BAR_COUNT * dims.barWidth + (BAR_COUNT - 1) * dims.barSpacing;
+
+                this.svg = document.createElementNS(
+                  "http://www.w3.org/2000/svg",
+                  "svg"
+                );
+
+                this.svg.setAttribute("width", totalWidth);
+                this.svg.setAttribute("height", dims.maxHeight);
+                this.svg.style.cssText = "display: block; margin: 0 auto;";
+
+                this.container.appendChild(this.svg);
+              }
+
+              createBars(dims) {
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+                const centerY = dims.maxHeight / 2;
+
+                this.bars = Array.from({ length: BAR_COUNT }, (_, i) => {
+                  const rect = document.createElementNS(
+                    "http://www.w3.org/2000/svg",
+                    "rect"
+                  );
+                  const x = i * (dims.barWidth + dims.barSpacing);
+
+                  rect.setAttribute("x", x);
+                  rect.setAttribute("width", dims.barWidth);
+                  rect.setAttribute("height", dims.minHeight);
+                  rect.setAttribute("y", centerY - dims.minHeight / 2);
+                  rect.setAttribute("fill", "white");
+                  rect.setAttribute("stroke", "none");
+
+                  this.svg.appendChild(rect);
+                  return rect;
+                });
+              }
+
+              initializeBarData(dims) {
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+                this.barData = Array.from({ length: BAR_COUNT }, () => ({
+                  current: dims.minHeight,
+                  target: dims.minHeight,
+                  velocity: 0,
+                }));
+              }
+
+              generateTargetHeights(dims) {
+                if (this.initialWave.active) {
+                  return this.generateInitialWaveHeights(dims);
+                }
+
+                const isPlaying = isSamplePlaying() || isBeatPlaying();
+
+                if (!isPlaying) {
+                  return this.barData.map(() => dims.minHeight);
+                }
+
+                return this.generateActiveWaveHeights(dims);
+              }
+
+              generateInitialWaveHeights(dims) {
+                const { duration } = WaveformVisualizer.CONFIG.INITIAL_WAVE;
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+
+                const elapsed = Date.now() - this.initialWave.startTime;
+
+                if (elapsed >= duration) {
+                  this.initialWave.active = false;
+                  return this.barData.map(() => dims.minHeight);
+                }
+
+                const progress = elapsed / duration;
+                const waveSpeed = 1.2;
+                const animationDuration = 0.2;
+
+                return this.barData.map((_, i) => {
+                  const barActivationTime = i / BAR_COUNT / waveSpeed;
+                  const barTime = progress - barActivationTime;
+
+                  if (barTime < 0 || barTime > animationDuration) {
+                    return dims.minHeight;
+                  }
+
+                  const barProgress = barTime / animationDuration;
+                  const amplitude = Math.sin(barProgress * Math.PI);
+                  const heightIncrease = Math.max(
+                    3,
+                    Math.round(10 * Math.min(1, dims.minHeight / 4))
+                  );
+
+                  return dims.minHeight + amplitude * heightIncrease;
+                });
+              }
+
+              generateActiveWaveHeights(dims) {
+                const { BAR_COUNT } = WaveformVisualizer.CONFIG;
+                const {
+                  maxHeightProbability,
+                  timeIncrement,
+                  barOffset,
+                  chaosRange,
+                  heightMultiplier,
+                } = WaveformVisualizer.CONFIG.ANIMATION;
+
+                analyser.getByteFrequencyData(this.frequencies);
+
+                return this.barData.map((_, i) => {
+                  // Specchia l'index:
+                  const barIndex = i < BAR_COUNT / 2 ? i : BAR_COUNT - i;
+                  // Calcola quante frequenze stanno in una barra:
+                  const sampleSize = Math.floor(
+                    frequencyBinCount / (BAR_COUNT / 2)
+                  );
+                  // Calcola la media di tutte le frequenze (0-255) per quella barra:
+                  const amplitude =
+                    this.frequencies
+                      .slice(
+                        barIndex * sampleSize,
+                        barIndex * sampleSize + sampleSize
+                      )
+                      .reduce((a, b) => a + b) / sampleSize;
+                  return Math.max(
+                    dims.minHeight,
+                    (amplitude / 255) * dims.maxHeight
+                  );
+                });
+              }
+
+              updateBars() {
+                const dims = this.getResponsiveDimensions();
+                const targets = this.generateTargetHeights(dims);
+                const centerY = dims.maxHeight / 2;
+                const { acceleration, damping } =
+                  WaveformVisualizer.CONFIG.ANIMATION;
+
+                this.bars.forEach((bar, i) => {
+                  const data = this.barData[i];
+
+                  data.target = targets[i];
+                  data.velocity += (data.target - data.current) * acceleration;
+                  data.velocity *= damping;
+                  data.current += data.velocity;
+
+                  data.current = Math.max(
+                    dims.minHeight,
+                    Math.min(dims.maxHeight, data.current)
+                  );
+
+                  const height = Math.round(data.current);
+                  bar.setAttribute("height", height);
+                  bar.setAttribute("y", centerY - height / 2);
+                });
+
+                this.time++;
+                this.animationId = requestAnimationFrame(() =>
+                  this.updateBars()
+                );
+              }
+
+              startAnimation() {
+                if (this.animationId) {
+                  cancelAnimationFrame(this.animationId);
+                }
+                this.updateBars();
+              }
+
+              scheduleInitialWave() {
+                const { delay } = WaveformVisualizer.CONFIG.INITIAL_WAVE;
+                setTimeout(() => {
+                  this.initialWave.active = true;
+                  this.initialWave.startTime = Date.now();
+                }, delay);
+              }
+
+              handleResize() {
+                if (this.animationId) {
+                  cancelAnimationFrame(this.animationId);
+                }
+                this.createWaveform();
+                this.startAnimation();
+              }
+
+              debouncedResize() {
+                clearTimeout(this.resizeTimeout);
+                this.resizeTimeout = setTimeout(
+                  () => this.handleResize(),
+                  WaveformVisualizer.CONFIG.RESIZE_DEBOUNCE
+                );
+              }
+
+              bindEvents() {
+                this.boundResize = () => this.debouncedResize();
+                window.addEventListener("resize", this.boundResize);
+              }
+
+              destroy() {
+                if (this.animationId) {
+                  cancelAnimationFrame(this.animationId);
+                }
+                window.removeEventListener("resize", this.boundResize);
+                clearTimeout(this.resizeTimeout);
+                this.container.innerHTML = "";
+              }
+            }
+
+            // Initialize when DOM is ready
+            function initWaveform() {
+              try {
+                return new WaveformVisualizer("waveform-container");
+              } catch (error) {
+                console.error("Failed to initialize waveform:", error);
+                return null;
+              }
+            }
+
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", initWaveform);
+            } else {
+              initWaveform();
+            }
+
+            // SVGs bottoni
+            const svgMarkup = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 464 215">
+  <g id="bottone1">
+    <rect id="BASE1" class="cls-2" x="153.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO1">
+      <path class="cls-1 cursor-hover" d="M190,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M190,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M190,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PLAY1">
+      <path class="cls-3 cursor-hover" d="M185.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"/>
+      <path class="cls-1 cursor-hover" d="M185.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M185.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73s-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"/>
+    </g>
+  </g>
+  <g id="bottone2">
+    <rect id="BASE2" class="cls-2" x="226.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO2">
+      <path class="cls-1 cursor-hover" d="M263,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M263,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M263,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PAUSA2">
+      <g>
+        <path class="cls-1 cursor-hover" d="M259.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M259.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M259.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+      <g>
+        <path class="cls-1 cursor-hover" d="M266.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M266.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M266.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+    </g>
+  </g>
+  <g id="bottone3">
+    <rect id="BASE3" class="cls-2" x="299.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO3">
+      <path class="cls-1 cursor-hover" d="M336,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M336,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M336,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PLAY3">
+      <path class="cls-3 cursor-hover" d="M331.59,145.47c-.83,0-1.5-.67-1.5-1.5v-13.94c0-.83.67-1.5,1.5-1.5.26,0,.52.07.75.2l12.07,6.97c.47.27.75.76.75,1.3s-.28,1.03-.75,1.3l-12.07,6.97c-.23.13-.49.2-.75.2Z"/>
+      <path class="cls-1 cursor-hover" d="M331.59,129.03c.17,0,.34.04.5.14l12.07,6.97c.67.38.67,1.35,0,1.73l-12.07,6.97c-.16.09-.33.14-.5.14-.52,0-1-.42-1-1v-13.94c0-.58.48-1,1-1M331.59,128.03h0c-1.1,0-2,.9-2,2v13.94c0,1.1.9,2,2,2,.35,0,.69-.09,1-.27l12.07-6.97c.63-.36,1-1.01,1-1.73s-.37-1.37-1-1.73l-12.07-6.97c-.31-.18-.65-.27-1-.27h0Z"/>
+    </g>
+  </g>
+  <g id="bottone4">
+    <rect id="BASE4" class="cls-2" x="372.5" y="100.5" width="73" height="73" rx="10" ry="10"/>
+    <g id="CERCHIO4">
+      <path class="cls-1 cursor-hover" d="M409,160.5c-12.96,0-23.5-10.54-23.5-23.5s10.54-23.5,23.5-23.5,23.5,10.54,23.5,23.5-10.54,23.5-23.5,23.5Z"/>
+      <path class="cls-3 cursor-hover" d="M409,114c12.7,0,23,10.3,23,23s-10.3,23-23,23-23-10.3-23-23,10.3-23,23-23M409,113c-13.23,0-24,10.77-24,24s10.77,24,24,24,24-10.77,24-24-10.77-24-24-24h0Z"/>
+    </g>
+    <g id="PAUSA4">
+      <g>
+        <path class="cls-1 cursor-hover" d="M405.24,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M405.24,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M405.24,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+      <g>
+        <path class="cls-1 cursor-hover" d="M412.76,145.47c-1.23,0-2.24-1.06-2.24-2.36v-12.22c0-1.3,1-2.36,2.24-2.36s2.24,1.06,2.24,2.36v12.22c0,1.3-1,2.36-2.24,2.36Z"/>
+        <path class="cls-1 cursor-hover" d="M412.76,129.03c.96,0,1.74.83,1.74,1.86v12.22c0,1.03-.78,1.86-1.74,1.86s-1.74-.83-1.74-1.86v-12.22c0-1.03.78-1.86,1.74-1.86M412.76,128.03c-1.51,0-2.74,1.28-2.74,2.86v12.22c0,1.58,1.23,2.86,2.74,2.86s2.74-1.28,2.74-2.86v-12.22c0-1.58-1.23-2.86-2.74-2.86h0Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
+`;
+            const svgMobileMarkup = ` 
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 147">
+            <g id="mobileBtn1">
               <g id="base1">
                 <rect
                   class="fill-orange"
@@ -51,7 +917,7 @@
                 />
               </g>
             </g>
-            <g id="bottone2Mobile">
+            <g id="mobileBtn2">
               <g id="base2">
                 <rect
                   class="fill-orange"
@@ -85,7 +951,7 @@
                 />
               </g>
             </g>
-            <g id="bottone3Mobile">
+            <g id="mobileBtn3">
               <g id="base3">
                 <rect
                   class="fill-orange"
@@ -122,7 +988,7 @@
                 />
               </g>
             </g>
-            <g id="bottone4Mobile">
+            <g id="mobileBtn4">
               <g id="base4">
                 <rect
                   class="fill-orange"
@@ -157,7 +1023,7 @@
                 />
               </g>
             </g>
-            <g id="bottone5Mobile">
+            <g id="mobileBtn5">
               <g id="base5">
                 <rect
                   class="fill-orange"
@@ -196,7 +1062,7 @@
                 </g>
               </g>
             </g>
-            <g id="bottone6Mobile">
+            <g id="mobileBtn6">
               <g id="base6">
                 <rect
                   class="fill-orange"
@@ -234,8 +1100,8 @@
               </g>
             </g>
           </svg>
-          <!-- base -->
-          <img src="./BaseConsole-mobile.svg" alt="" />
+  `;
+          </script>
         </div>
       </div>
     </div>
