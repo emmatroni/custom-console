@@ -1,11 +1,20 @@
-<!-- BOTTONI CONSOLE -->
+<!-- BOTTONI CONSOLE + WAVE -->
 <script>
-  //https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
+  //Web Audio API --> https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Visualizations_with_Web_Audio_API
   const audioContext = new AudioContext();
   const analyser = audioContext.createAnalyser();
 
   // Fast Fourier Transform (https://it.wikipedia.org/wiki/Trasformata_di_Fourier_veloce)
-  analyser.fftSize = 512;
+  // L'audio passa da dominio temporale a frequenziale:
+  // - Input: forma d'onda grezza (ampiezza nel tempo)
+  // - FFT: scompone in componenti frequenziali
+  // - Output: 256 valori (0-255) per diverse frequenze
+  // Mappatura Frequenze --> Barre
+  // Ogni barra rappresenta la media di un gruppo di frequenze adiacenti
+
+  // FFT richiede potenze di 2 per motivi algoritmici:
+  // valori possibili: 512, 256, 128, 64, 32 frequency bins
+  analyser.fftSize = 256;
 
   // Questo sara' sempre fftSize / 2, ed e' il numero di barre per ogni frequenza dell'audio analizzato.
   const frequencyBinCount = analyser.frequencyBinCount;
@@ -39,7 +48,6 @@
     };
   }
 
-  // Unified audio management
   class AudioManager {
     constructor() {
       const { sample, beat } = generateAudioUrls(getCurrentSlug());
@@ -86,7 +94,7 @@
     async play(trackName) {
       await this.ensureAudioContextStarted();
 
-      // Stop other tracks
+      // ferma altri mp3
       Object.keys(this.tracks).forEach((name) => {
         if (name !== trackName && this.tracks[name].playing) {
           this.pause(name);
@@ -133,13 +141,11 @@
   const audioManager = new AudioManager();
   audioManager.preloadAll();
 
-  // Simplified play/pause functions
   const playSample = () => audioManager.play("sample");
   const pauseSample = () => audioManager.pause("sample");
   const playBeat = () => audioManager.play("beat");
   const pauseBeat = () => audioManager.pause("beat");
 
-  // Get playing states
   const isSamplePlaying = () => audioManager.isPlaying("sample");
   const isBeatPlaying = () => audioManager.isPlaying("beat");
 
@@ -335,65 +341,54 @@
   }
 
   function navigateToPreviousManual() {
-    // Get current page slug from URL
+    //page slug dall' URL
     const currentPath = window.location.pathname;
     const currentSlug = currentPath.split("/").pop();
 
-    // Find current index
     const currentIndex = cmsPageNames.indexOf(currentSlug);
 
     if (currentIndex === -1) {
       console.warn("Current page not found in manual list");
-      // Fallback: vai all'ultimo elemento della lista
-      const lastSlug = cmsPageNames[cmsPageNames.length - 1]; // "calendario"
+      // gestione del "prev" su mobile (primo elemento == ultimo della lista)
+      const lastSlug = cmsPageNames[cmsPageNames.length - 1];
       const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
       const newUrl = `${window.location.origin}${basePath}/${lastSlug}`;
       window.location.href = newUrl;
       return;
     }
 
-    // Get previous index (wrap to end if at beginning)
     const previousIndex =
       currentIndex === 0 ? cmsPageNames.length - 1 : currentIndex - 1;
     const previousSlug = cmsPageNames[previousIndex];
 
-    // Build new URL
+    // url per prev
     const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
     const newUrl = `${window.location.origin}${basePath}/${previousSlug}`;
-
-    // Navigate
     window.location.href = newUrl;
   }
   function navigateToNextManual() {
+    // gestione del "next" su mobile (primo elemento == ultimo della lista)
     const currentPath = window.location.pathname;
     const currentSlug = currentPath.split("/").pop();
 
-    // trova index
     const currentIndex = cmsPageNames.indexOf(currentSlug);
 
     if (currentIndex === -1) {
       console.warn("Current page not found in manual list");
-      // Fallback: vai al primo elemento della lista
-      const firstSlug = cmsPageNames[0]; // "natura"
+      const firstSlug = cmsPageNames[0];
       const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
       const newUrl = `${window.location.origin}${basePath}/${firstSlug}`;
       window.location.href = newUrl;
       return;
     }
-
-    // Get next index (wrap to beginning if at end)
     const nextIndex = (currentIndex + 1) % cmsPageNames.length;
     const nextSlug = cmsPageNames[nextIndex];
 
-    // Build new URL
     const basePath = currentPath.substring(0, currentPath.lastIndexOf("/"));
     const newUrl = `${window.location.origin}${basePath}/${nextSlug}`;
 
-    // Navigate
     window.location.href = newUrl;
   }
-
-  // Update setupMobileButtons function to add mobileBtn6 functionality:
 
   function setupMobileButtons(containerMobile) {
     const mobileBtn1 = containerMobile.querySelector("#mobileBtn1");
@@ -403,7 +398,7 @@
     const mobileBtn5 = containerMobile.querySelector("#mobileBtn5");
     const mobileBtn6 = containerMobile.querySelector("#mobileBtn6");
 
-    // Previous page navigation
+    // Prev
     if (mobileBtn1) {
       mobileBtn1.addEventListener(
         "touchstart",
@@ -416,7 +411,7 @@
       );
     }
 
-    // Audio controls
+    // controlli audio
     if (mobileBtn2) {
       mobileBtn2.addEventListener(
         "touchstart",
@@ -461,7 +456,7 @@
       );
     }
 
-    // Next page navigation
+    // Next
     if (mobileBtn6) {
       mobileBtn6.addEventListener(
         "touchstart",
@@ -476,7 +471,7 @@
   }
 
   // ------------ SOUND WAVE ------------
-  // Auto-initialize or provide manual init
+  // Auto-initialize
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAudioPlayer);
   } else {
@@ -484,9 +479,11 @@
   }
 
   class WaveformVisualizer {
-    // Configuration constants
     static CONFIG = {
-      BAR_COUNT: 90, // Va bene tutto purche' sia minore di frequencyBinCount * 2
+      // BAR_COUNT: 90, // Va bene tutto purche' sia minore di frequencyBinCount * 2
+      get BAR_COUNT() {
+        return window.innerWidth < 480 ? 80 : 92;
+      },
       BASE_VIEWPORT: { width: 1512, height: 982 },
       INITIAL_WAVE: { duration: 1000, delay: 500 },
       ANIMATION: {
@@ -537,13 +534,16 @@
       const { width: baseW, height: baseH } =
         WaveformVisualizer.CONFIG.BASE_VIEWPORT;
 
+      // rapporto più piccolo tra le dimensioni della current window e quelle di riferimento (1512x982 di figma)
       const scale = Math.min(vw / baseW, vh / baseH);
 
       return {
         barWidth: Math.max(2, Math.round(4 * scale)),
         barSpacing: Math.max(2, Math.round(5 * scale)),
         minHeight: Math.max(2, Math.round(4 * scale)),
-        maxHeight: Math.max(20, Math.round(145 * scale)),
+        //  primo parametro è maxHeight minima
+        // x uno schermo 1512x982 (dimensioni base): scale = 1, quindi maxHeight = 180
+        maxHeight: Math.max(80, Math.round(180 * scale)),
       };
     }
 
@@ -642,15 +642,17 @@
 
         const barProgress = barTime / animationDuration;
         const amplitude = Math.sin(barProgress * Math.PI);
+        // altezza barre animazione iniziale
         const heightIncrease = Math.max(
-          3,
-          Math.round(10 * Math.min(1, dims.minHeight / 4))
+          5,
+          Math.round(20 * Math.min(1, dims.minHeight / 4))
         );
 
         return dims.minHeight + amplitude * heightIncrease;
       });
     }
 
+    // GESTIONE FORMA SOUND WAVE che prende frequenze mp3
     generateActiveWaveHeights(dims) {
       const { BAR_COUNT } = WaveformVisualizer.CONFIG;
       const {
@@ -663,20 +665,53 @@
 
       analyser.getByteFrequencyData(this.frequencies);
 
+      const quarterSize = Math.floor(BAR_COUNT / 4);
+
       return this.barData.map((_, i) => {
-        // Specchia l'index:
-        const barIndex = i < BAR_COUNT / 2 ? i : BAR_COUNT - i;
-        // Calcola quante frequenze stanno in una barra:
-        const sampleSize = Math.floor(frequencyBinCount / (BAR_COUNT / 2));
-        // Calcola la media di tutte le frequenze (0-255) per quella barra:
+        let barIndex;
+        const quarter = Math.floor(i / quarterSize);
+        const positionInQuarter = i % quarterSize;
+
+        if (quarter === 0 || quarter === 2) {
+          // Primo e terzo quarto: specchiati
+          barIndex = quarterSize - 1 - positionInQuarter;
+        } else {
+          // Secondo e quarto quarto: non specchiati
+          barIndex = positionInQuarter;
+        }
+
+        // Assicurati che barIndex sia valido
+        barIndex = Math.max(0, Math.min(barIndex, quarterSize - 1));
+
+        // Calcola sampleSize con controllo minimo
+        const sampleSize = Math.max(
+          1,
+          Math.floor(frequencyBinCount / quarterSize)
+        );
+
+        // Calcola gli indici con controlli di sicurezza
+        const startIndex = Math.min(
+          barIndex * sampleSize,
+          this.frequencies.length - 1
+        );
+        const endIndex = Math.min(
+          startIndex + sampleSize,
+          this.frequencies.length
+        );
+
+        // Ottieni le frequenze con fallback se array vuoto
+        const freqSlice = this.frequencies.slice(startIndex, endIndex);
+
         const amplitude =
-          this.frequencies
-            .slice(barIndex * sampleSize, barIndex * sampleSize + sampleSize)
-            .reduce((a, b) => a + b) / sampleSize;
+          freqSlice.length > 0
+            ? freqSlice.reduce((a, b) => a + b, 0) / freqSlice.length
+            : 0;
+
         return Math.max(dims.minHeight, (amplitude / 255) * dims.maxHeight);
       });
     }
 
+    // animazione
     updateBars() {
       const dims = this.getResponsiveDimensions();
       const targets = this.generateTargetHeights(dims);
@@ -751,7 +786,7 @@
     }
   }
 
-  // Initialize when DOM is ready
+  // Initialize quando il DOM è pronto
   function initWaveform() {
     try {
       return new WaveformVisualizer("waveform-container");
